@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU⁺ — Soluções que elevam</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--ink:#0D0D0D;--ivory:#F5F2EC;--muted:#888078;
+--e-bg:#161616;--e-ac:#C4A265;--e-lt:#D4B483;--e-tx:#F5F2EC;
+--m-bg:#1E1206;--m-ac:#E8720C;--m-lt:#F5A05A;--m-tx:#FFF8F0;
+--s-bg:#0E1A0E;--s-ac:#7AAD66;--s-lt:#A8CC94;--s-tx:#F0F5EE;
+--v-bg:#071220;--v-ac:#4A9BC4;--v-lt:#7DC0E0;--v-tx:#EEF6FB;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--ivory);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 60px;background:rgba(13,13,13,0.94);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.06)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:white;text-decoration:none;letter-spacing:0.04em;display:inline-flex;align-items:flex-start;line-height:1}
+.nav-logo sup{font-size:0.42em;color:#B8975A;margin-top:0.05em;font-weight:400}
+.nav-links{display:flex;gap:6px;list-style:none}
+.nav-links a{font-size:10px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;padding:8px 16px;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.35);text-decoration:none;transition:all 0.2s}
+.nav-links a:hover{border-color:rgba(255,255,255,0.25);color:rgba(255,255,255,0.75)}
+.nav-links a.e:hover{border-color:#B8975A;color:#B8975A}
+.nav-links a.m:hover{border-color:#E8720C;color:#E8720C}
+.nav-links a.s:hover{border-color:#6B8C5A;color:#6B8C5A}
+.nav-links a.v:hover{border-color:#4A9BC4;color:#4A9BC4}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.ham span{display:block;width:22px;height:1.5px;background:rgba(255,255,255,0.5);transition:all 0.2s}
+.mob-nav{display:none;position:fixed;top:65px;left:0;right:0;background:rgba(13,13,13,0.98);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.06);padding:20px 24px 28px;z-index:99;flex-direction:column;gap:0}
+.mob-nav.open{display:flex}
+.mob-nav a{font-size:12px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.05);transition:color 0.2s}
+.mob-nav a:last-child{border-bottom:none}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 60px 80px;position:relative;text-align:center;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 25% 50%,rgba(184,151,90,0.07) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 75% 50%,rgba(74,155,196,0.05) 0%,transparent 70%);pointer-events:none}
+.hero-bg{position:absolute;font-family:'Cormorant Garamond',serif;font-size:clamp(160px,26vw,360px);font-weight:600;color:rgba(255,255,255,0.022);line-height:1;user-select:none;pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;letter-spacing:-0.02em}
+.hero-bg sup{font-size:0.38em;vertical-align:super}
+.hero-eye{font-size:10px;font-weight:500;letter-spacing:0.32em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:36px;position:relative}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(80px,13vw,180px);font-weight:300;line-height:1;color:white;margin-bottom:6px;position:relative;letter-spacing:-0.02em}
+.hero-title sup{font-size:0.3em;color:#B8975A;vertical-align:super;font-weight:400;margin-top:0.1em}
+.hero-tag{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2.2vw,26px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.35);margin-bottom:60px;position:relative}
+.hero-pills{display:flex;gap:2px;position:relative;flex-wrap:wrap;justify-content:center;margin-bottom:0}
+.pill{font-size:10px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;padding:10px 22px;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.28);text-decoration:none;transition:all 0.3s}
+.pill.e{border-color:rgba(184,151,90,0.28);color:rgba(184,151,90,0.65)}
+.pill.m{border-color:rgba(232,114,12,0.28);color:rgba(232,114,12,0.65)}
+.pill.s{border-color:rgba(107,140,90,0.28);color:rgba(107,140,90,0.65)}
+.pill.v{border-color:rgba(74,155,196,0.28);color:rgba(74,155,196,0.65)}
+.pill:hover{opacity:1;filter:brightness(1.3)}
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.18);font-size:9px;letter-spacing:0.24em;text-transform:uppercase;animation:bob 2.2s ease-in-out infinite}
+.scroll-hint::after{content:'';width:1px;height:36px;background:linear-gradient(to bottom,rgba(255,255,255,0.18),transparent)}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+
+/* FRENTE */
+.frente{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden}
+.frente.flip{direction:rtl}
+.frente.flip>*{direction:ltr}
+
+/* VISUAL SIDE */
+.fv{position:relative;display:flex;align-items:center;justify-content:center;padding:80px 60px;overflow:hidden}
+.fv-bg-n{position:absolute;font-family:'Cormorant Garamond',serif;font-size:clamp(180px,28vw,360px);font-weight:600;opacity:0.045;line-height:1;user-select:none;pointer-events:none;right:-30px;bottom:-30px;letter-spacing:-0.04em}
+.fv-inner{position:relative;z-index:1;text-align:center}
+.fv-marca{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,7vw,90px);font-weight:300;line-height:1;letter-spacing:-0.01em;margin-bottom:14px;display:inline-flex;align-items:flex-start}
+.fv-marca sup{font-size:0.36em;vertical-align:super;font-weight:400;margin-top:0.08em}
+.fv-nome{font-size:10px;font-weight:500;letter-spacing:0.3em;text-transform:uppercase;opacity:0.45}
+
+/* CONTENT SIDE */
+.fc{padding:80px 70px 80px 60px;display:flex;flex-direction:column;justify-content:center}
+.frente.flip .fc{padding:80px 60px 80px 70px}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;padding:6px 14px;border:1px solid currentColor;margin-bottom:28px;width:fit-content;opacity:0.9}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.live::before{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.25}}
+.flabel{font-size:10px;font-weight:500;letter-spacing:0.26em;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:14px;opacity:1}
+.flabel::before{content:'';width:26px;height:1px;background:currentColor;opacity:0.8}
+.ftitle{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,3.2vw,46px);font-weight:300;line-height:1.12;margin-bottom:18px}
+.ftitle em{font-style:italic}
+.fbody{font-size:15px;font-weight:300;line-height:1.75;opacity:0.82;margin-bottom:28px;max-width:400px}
+.fpub{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:38px}
+.fpub li{font-size:13px;font-weight:400;opacity:0.88;display:flex;align-items:center;gap:12px}
+.fpub li::before{content:'';width:14px;height:1px;flex-shrink:0;opacity:1}
+.fctas{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.btn-main{display:inline-block;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;padding:14px 32px;text-decoration:none;border:1px solid currentColor;transition:all 0.25s;cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent}
+.btn-ghost{display:inline-block;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;opacity:0.7;padding-bottom:2px;border-bottom:1px solid transparent;transition:opacity 0.2s,border-color 0.2s;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.btn-ghost:hover{opacity:1;border-bottom-color:currentColor}
+
+/* EMPRESA */
+#empresa{background:var(--e-bg)}
+#empresa .fv{background:rgba(184,151,90,0.03);border-right:1px solid rgba(184,151,90,0.1)}
+#empresa .fv-marca{color:var(--e-ac)}
+#empresa .fv-bg-n{color:var(--e-ac)}
+#empresa .badge{color:var(--e-ac);opacity:0.85}
+#empresa .flabel{color:var(--e-ac)}
+#empresa .ftitle{color:var(--e-tx)}
+#empresa .ftitle em{color:var(--e-ac)}
+#empresa .fbody{color:var(--e-tx)}
+#empresa .fpub li{color:var(--e-tx)}
+#empresa .fpub li::before{background:var(--e-ac)}
+#empresa .btn-main{color:var(--e-bg);background:var(--e-ac);border-color:var(--e-ac)}
+#empresa .btn-main:hover{background:transparent;color:var(--e-ac)}
+#empresa .btn-ghost{color:var(--e-tx)}
+
+/* EMPREENDEDOR */
+#empreendedor{background:var(--m-bg)}
+#empreendedor .fv{background:rgba(232,114,12,0.04);border-left:1px solid rgba(232,114,12,0.1)}
+#empreendedor .fv-marca{color:var(--m-ac)}
+#empreendedor .fv-bg-n{color:var(--m-ac)}
+#empreendedor .badge{color:var(--m-ac)}
+#empreendedor .flabel{color:var(--m-ac)}
+#empreendedor .ftitle{color:var(--m-tx)}
+#empreendedor .ftitle em{color:var(--m-ac)}
+#empreendedor .fbody{color:var(--m-tx)}
+#empreendedor .fpub li{color:var(--m-tx)}
+#empreendedor .fpub li::before{background:var(--m-ac)}
+#empreendedor .btn-main{color:var(--m-bg);background:var(--m-ac);border-color:var(--m-ac)}
+#empreendedor .btn-main:hover{background:transparent;color:var(--m-ac)}
+#empreendedor .btn-ghost{color:var(--m-tx)}
+
+/* MISSÃO */
+#missao{background:var(--s-bg)}
+#missao .fv{background:rgba(107,140,90,0.04);border-right:1px solid rgba(107,140,90,0.1)}
+#missao .fv-marca{color:var(--s-ac)}
+#missao .fv-bg-n{color:var(--s-ac)}
+#missao .badge{color:var(--s-ac)}
+#missao .flabel{color:var(--s-ac)}
+#missao .ftitle{color:var(--s-tx)}
+#missao .ftitle em{color:var(--s-ac)}
+#missao .fbody{color:var(--s-tx)}
+#missao .fpub li{color:var(--s-tx)}
+#missao .fpub li::before{background:var(--s-ac)}
+#missao .btn-main{color:var(--s-bg);background:var(--s-ac);border-color:var(--s-ac)}
+#missao .btn-main:hover{background:transparent;color:var(--s-ac)}
+#missao .btn-ghost{color:var(--s-tx)}
+
+/* VIDA */
+#vida{background:var(--v-bg)}
+#vida .fv{background:rgba(74,155,196,0.04);border-left:1px solid rgba(74,155,196,0.1)}
+#vida .fv-marca{color:var(--v-ac)}
+#vida .fv-bg-n{color:var(--v-ac)}
+#vida .badge{color:var(--v-ac)}
+#vida .flabel{color:var(--v-ac)}
+#vida .ftitle{color:var(--v-tx)}
+#vida .ftitle em{color:var(--v-ac)}
+#vida .fbody{color:var(--v-tx)}
+#vida .fpub li{color:var(--v-tx)}
+#vida .fpub li::before{background:var(--v-ac)}
+#vida .btn-main{color:var(--v-bg);background:var(--v-ac);border-color:var(--v-ac)}
+#vida .btn-main:hover{background:transparent;color:var(--v-ac)}
+#vida .btn-ghost{color:var(--v-tx)}
+
+/* FOOTER */
+footer{background:#060606;padding:48px 60px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;gap:20px}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:rgba(255,255,255,0.28);display:inline-flex;align-items:flex-start;line-height:1}
+.f-logo sup{font-size:0.42em;color:#B8975A;vertical-align:super;font-weight:400}
+.f-links{display:flex;gap:28px;list-style:none;flex-wrap:wrap}
+.f-links a{font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.18);text-decoration:none;transition:color 0.2s}
+.f-links a:hover{color:rgba(255,255,255,0.45)}
+.f-copy{font-size:11px;color:rgba(255,255,255,0.1)}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(14px);z-index:500;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.mbox{background:#0f0f0f;border:1px solid rgba(255,255,255,0.07);padding:52px 48px;width:100%;max-width:460px;position:relative;animation:min 0.28s ease}
+@keyframes min{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mclose{position:absolute;top:16px;right:20px;font-size:20px;color:rgba(255,255,255,0.2);cursor:pointer;background:none;border:none;font-family:inherit;transition:color 0.2s}
+.mclose:hover{color:white}
+.mey{font-size:10px;font-weight:500;letter-spacing:0.26em;text-transform:uppercase;margin-bottom:16px}
+.mbox h3{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:white;margin-bottom:6px}
+.msub{font-size:13px;font-weight:300;color:rgba(255,255,255,0.3);margin-bottom:28px;line-height:1.55}
+.mf{margin-bottom:15px}
+.mf label{display:block;font-size:9px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:7px}
+.mf input,.mf textarea,.mf select{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:white;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;outline:none;transition:border-color 0.2s;resize:vertical}
+.mf input::placeholder,.mf textarea::placeholder{color:rgba(255,255,255,0.14)}
+.mf select{appearance:none;cursor:pointer}
+.mf select option{background:#111}
+.mbtn{width:100%;padding:14px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:opacity 0.2s}
+.mbtn:hover{opacity:0.85}
+.msuccess{display:none;text-align:center;padding:16px 0}
+.msuccess .ico{font-size:44px;margin-bottom:16px}
+.msuccess h3{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:white;margin-bottom:10px}
+.msuccess p{font-size:13px;font-weight:300;color:rgba(255,255,255,0.32);line-height:1.6}
+
+/* ANIMATIONS */
+.fu{opacity:0;transform:translateY(24px);transition:opacity 0.65s ease,transform 0.65s ease}
+.fu.vis{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+nav{padding:18px 24px}
+.nav-links{display:none}
+.ham{display:flex}
+.hero{padding:100px 24px 72px}
+.hero-pills{gap:4px}
+.frente{grid-template-columns:1fr;min-height:auto}
+.frente.flip{direction:ltr}
+.fv{padding:52px 24px;min-height:180px}
+.fc{padding:48px 24px}
+.frente.flip .fc{padding:48px 24px}
+footer{padding:36px 24px;flex-direction:column;align-items:flex-start}
+.mbox{padding:36px 24px}
+}
+@media(max-width:480px){
+.hero-pills{flex-direction:column;align-items:center}
+.fctas{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">EU<sup>+</sup></a>
+  <ul class="nav-links">
+    <li><a class="e" href="#empresa">Empresa</a></li>
+    <li><a class="m" href="#empreendedor">Empreendedor</a></li>
+    <li><a class="s" href="#missao">Missão</a></li>
+    <li><a class="v" href="#vida">Vida</a></li>
+  </ul>
+  <button class="ham" onclick="togMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mob-nav" id="mob">
+  <a href="#empresa" onclick="clMob()">EU⁺ Empresa</a>
+  <a href="#empreendedor" onclick="clMob()">EU⁺ Empreendedor</a>
+  <a href="#missao" onclick="clMob()">EU⁺ Missão</a>
+  <a href="#vida" onclick="clMob()">EU⁺ Vida</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">EU<sup>+</sup></div>
+  <div class="hero-eye fu">Soluções que elevam</div>
+  <div class="hero-title fu" style="transition-delay:.1s">EU<sup>+</sup></div>
+  <p class="hero-tag fu" style="transition-delay:.2s">Para o negócio, para a missão, para a vida.</p>
+  <div class="hero-pills fu" style="transition-delay:.3s">
+    <a class="pill e" href="#empresa">EU⁺ Empresa</a>
+    <a class="pill m" href="#empreendedor">EU⁺ Empreendedor</a>
+    <a class="pill s" href="#missao">EU⁺ Missão</a>
+    <a class="pill v" href="#vida">EU⁺ Vida</a>
+  </div>
+  <div class="scroll-hint">Explorar</div>
+</section>
+
+<!-- EU+ EMPRESA -->
+<section class="frente" id="empresa">
+  <div class="fv">
+    <div class="fv-bg-n">01</div>
+    <div class="fv-inner fu">
+      <div class="fv-marca">EU<sup>+</sup></div>
+      <div class="fv-nome">Empresa</div>
+    </div>
+  </div>
+  <div class="fc">
+    <div class="badge live fu">Disponível agora</div>
+    <div class="flabel fu" style="transition-delay:.05s">Gestão Comercial B2B</div>
+    <h2 class="ftitle fu" style="transition-delay:.1s">A estrutura que grandes empresas têm.<br><em>Para o negócio que você construiu.</em></h2>
+    <p class="fbody fu" style="transition-delay:.14s">Painel de inteligência comercial que transforma relatórios do seu ERP em decisões. Carteira, representantes, categorias e alertas — em minutos, sem TI, sem planilha.</p>
+    <ul class="fpub fu" style="transition-delay:.18s">
+      <li>Empresários e donos de operação</li>
+      <li>Gerentes comerciais e de atacado</li>
+      <li>Redes de varejo e distribuidoras</li>
+      <li>Times de televendas e B2B</li>
+    </ul>
+    <div class="fctas fu" style="transition-delay:.22s">
+      <button class="btn-main" onclick="openM('empresa')">Ver Demonstração</button>
+      <button class="btn-ghost" onclick="openM('empresa')">Saiba mais →</button>
+    </div>
+  </div>
+</section>
+
+<!-- EU+ EMPREENDEDOR -->
+<section class="frente flip" id="empreendedor">
+  <div class="fv">
+    <div class="fv-bg-n">02</div>
+    <div class="fv-inner fu">
+      <div class="fv-marca">EU<sup>+</sup></div>
+      <div class="fv-nome">Empreendedor</div>
+    </div>
+  </div>
+  <div class="fc">
+    <div class="flabel fu" style="transition-delay:.05s">Gestão Simplificada</div>
+    <h2 class="ftitle fu" style="transition-delay:.1s">Gestão do jeito que você vive.<br><em>Simples, rápido, no celular.</em></h2>
+    <p class="fbody fu" style="transition-delay:.14s">Para quem está com a mão na massa. Controle do que entra e sai, lista de compras inteligente, lembrete de voz. Sem planilha, sem contador, sem complicação.</p>
+    <ul class="fpub fu" style="transition-delay:.18s">
+      <li>Vendedores e representantes autônomos</li>
+      <li>Empreendedores de pequeno negócio</li>
+      <li>Produtores, artesãos e autônomos</li>
+      <li>Profissionais liberais e freelancers</li>
+    </ul>
+    <div class="fctas fu" style="transition-delay:.22s">
+      <button class="btn-main" onclick="openM('empreendedor')">Entre em Contato</button>
+      <button class="btn-ghost" onclick="openM('empreendedor')">Saiba mais →</button>
+    </div>
+  </div>
+</section>
+
+<!-- EU+ MISSÃO -->
+<section class="frente" id="missao">
+  <div class="fv">
+    <div class="fv-bg-n">03</div>
+    <div class="fv-inner fu">
+      <div class="fv-marca">EU<sup>+</sup></div>
+      <div class="fv-nome">Missão</div>
+    </div>
+  </div>
+  <div class="fc">
+    <div class="flabel fu" style="transition-delay:.05s">Gestão de Propósito</div>
+    <h2 class="ftitle fu" style="transition-delay:.1s">Tecnologia a serviço<br>de quem <em>serve.</em></h2>
+    <p class="fbody fu" style="transition-delay:.14s">Gerencie sua missão, não sua burocracia. Alcance de vidas, gestão de dons, transparência financeira e projetos de expansão — tudo voltado para pessoas, não para números.</p>
+    <ul class="fpub fu" style="transition-delay:.18s">
+      <li>Líderes religiosos e pastores</li>
+      <li>Coordenadores de comunidades</li>
+      <li>Organizações sociais e sem fins lucrativos</li>
+      <li>Ministérios e grupos de expansão</li>
+    </ul>
+    <div class="fctas fu" style="transition-delay:.22s">
+      <button class="btn-main" onclick="openM('missao')">Entre em Contato</button>
+      <button class="btn-ghost" onclick="openM('missao')">Saiba mais →</button>
+    </div>
+  </div>
+</section>
+
+<!-- EU+ VIDA -->
+<section class="frente flip" id="vida">
+  <div class="fv">
+    <div class="fv-bg-n">04</div>
+    <div class="fv-inner fu">
+      <div class="fv-marca">EU<sup>+</sup></div>
+      <div class="fv-nome">Vida</div>
+    </div>
+  </div>
+  <div class="fc">
+    <div class="flabel fu" style="transition-delay:.05s">Vida · Vocação · Carreira · Finanças</div>
+    <h2 class="ftitle fu" style="transition-delay:.1s">Tudo que você quer organizar.<br><em>Em um só lugar.</em></h2>
+    <p class="fbody fu" style="transition-delay:.14s">Planejamento de vida, metas pessoais, controle financeiro, vocação e carreira. Para quem quer mais do que sobreviver — quer viver com propósito e direção.</p>
+    <ul class="fpub fu" style="transition-delay:.18s">
+      <li>Pessoa física com metas de vida</li>
+      <li>Quem busca direção de carreira e vocação</li>
+      <li>Planejamento financeiro pessoal</li>
+      <li>Quem quer transformar intenção em ação</li>
+    </ul>
+    <div class="fctas fu" style="transition-delay:.22s">
+      <button class="btn-main" onclick="openM('vida')">Entre em Contato</button>
+      <button class="btn-ghost" onclick="openM('vida')">Saiba mais →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">EU<sup>+</sup></div>
+  <ul class="f-links">
+    <li><a href="#empresa">Empresa</a></li>
+    <li><a href="#empreendedor">Empreendedor</a></li>
+    <li><a href="#missao">Missão</a></li>
+    <li><a href="#vida">Vida</a></li>
+  </ul>
+  <span class="f-copy">© 2025 EU⁺ · Soluções que elevam</span>
+</footer>
+
+<!-- MODAL -->
+<div class="overlay" id="ov" onclick="hdOv(event)">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM()">×</button>
+    <div id="mform">
+      <div class="mey" id="mey"></div>
+      <h3 id="mtit"></h3>
+      <p class="msub" id="msub"></p>
+      <div class="mf">
+        <label>Nome</label>
+        <input type="text" id="mnome" placeholder="Seu nome">
+      </div>
+      <div class="mf">
+        <label>WhatsApp <span style="opacity:0.4;font-size:0.85em;font-weight:300;text-transform:none;letter-spacing:0">opcional</span></label>
+        <input type="tel" id="mwpp" placeholder="(00) 00000-0000">
+      </div>
+      <div class="mf">
+        <label>E-mail <span style="opacity:0.4;font-size:0.85em;font-weight:300;text-transform:none;letter-spacing:0">opcional</span></label>
+        <input type="email" id="memail" placeholder="email@exemplo.com">
+      </div>
+      <div class="mf">
+        <label>Seu maior desafio hoje</label>
+        <textarea id="mdes" rows="3" placeholder="Me conta o que mais te trava no dia a dia..."></textarea>
+      </div>
+      <button class="mbtn" id="mbtn" onclick="submitM()"></button>
+    </div>
+    <div class="msuccess" id="msuc">
+      <div class="ico">✅</div>
+      <h3>Recebido!</h3>
+      <p>Entraremos em contato em breve com novidades e condições especiais para você.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const CFG={
+  empresa:{ey:'EU⁺ Empresa',tit:'Acessar a demonstração',sub:'Veja o Painel de Gestão Comercial funcionando com dados reais. Sem cadastro, sem compromisso.',btn:'Ver Demonstração',ac:'#B8975A',bgBtn:'#B8975A',clBtn:'#0D0D0D'},
+  empreendedor:{ey:'EU⁺ Empreendedor',tit:'Entre em Contato',sub:'Deixe seu contato e nos conte como você trabalha. Retornaremos com a solução certa para o seu perfil.',btn:'Entrar em Contato',ac:'#E8720C',bgBtn:'#E8720C',clBtn:'#1A0F00'},
+  missao:{ey:'EU⁺ Missão',tit:'Entre em Contato',sub:'Deixe seu contato e nos conte sobre sua missão. Retornaremos com as soluções certas para você.',btn:'Entrar em Contato',ac:'#7AAD66',bgBtn:'#7AAD66',clBtn:'#0E1A0E'},
+  vida:{ey:'EU⁺ Vida',tit:'Entre em Contato',sub:'Deixe seu contato e nos conte o que você quer organizar na sua vida. Retornaremos com as soluções certas para você.',btn:'Entrar em Contato',ac:'#4A9BC4',bgBtn:'#4A9BC4',clBtn:'#071220'}
+};
+
+function openM(f){
+  const c=CFG[f];
+  document.getElementById('mey').textContent=c.ey;
+  document.getElementById('mey').style.color=c.ac;
+  document.getElementById('mtit').textContent=c.tit;
+  document.getElementById('msub').textContent=c.sub;
+  document.getElementById('mbtn').textContent=c.btn;
+  document.getElementById('mbtn').style.background=c.bgBtn;
+  document.getElementById('mbtn').style.color=c.clBtn;
+  document.getElementById('mform').style.display='block';
+  document.getElementById('msuc').style.display='none';
+  document.getElementById('ov').classList.add('open');
+  setTimeout(()=>document.getElementById('mnome').focus(),100);
+}
+function closeM(){document.getElementById('ov').classList.remove('open')}
+function hdOv(e){if(e.target===document.getElementById('ov'))closeM()}
+function submitM(){document.getElementById('mform').style.display='none';document.getElementById('msuc').style.display='block'}
+function togMob(){document.getElementById('mob').classList.toggle('open')}
+function clMob(){document.getElementById('mob').classList.remove('open')}
+
+// Scroll animations
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target)}});
+},{threshold:0.1});
+document.querySelectorAll('.fu').forEach(el=>obs.observe(el));
+
+// Hero immediate
+document.querySelectorAll('.hero .fu').forEach((el,i)=>{
+  setTimeout(()=>el.classList.add('vis'),i*130);
+});
+</script>
+</body>
+</html>
