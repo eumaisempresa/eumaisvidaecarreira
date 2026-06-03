@@ -12,13 +12,13 @@
     h1 { font-family: 'Cormorant Garamond', serif; font-size:42px; margin-bottom:10px; }
     input { width:100%; padding:16px; margin:12px 0; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:white; font-size:16px; }
     button { width:100%; padding:16px; background:#4A9BC4; color:white; border:none; border-radius:8px; font-size:15px; cursor:pointer; margin-top:10px; }
-    #mensagem { margin-top:20px; min-height:60px; }
+    #mensagem { margin-top:20px; min-height:60px; font-size:14px; }
   </style>
 </head>
 <body>
   <div class="login-box">
     <h1>EU⁺ Vida</h1>
-    <p>Digite seu email para receber o link de acesso</p>
+    <p>Digite seu email</p>
     
     <input type="email" id="email" placeholder="seu@email.com" />
     <button onclick="enviarMagicLink()">Enviar Link Mágico</button>
@@ -31,16 +31,19 @@
       const email = document.getElementById('email').value.trim();
       const msg = document.getElementById('mensagem');
 
-      if (!email) {
-        msg.innerHTML = "❌ Digite um email válido.";
+      msg.innerHTML = "Verificando...";
+
+      // Verifica se supabase está carregado
+      if (typeof supabase === 'undefined') {
+        msg.innerHTML = "❌ Supabase não carregado. Verifique supabase.js";
         msg.style.color = "#ff6b6b";
+        console.error("Supabase não foi carregado");
         return;
       }
 
-      msg.innerHTML = "Enviando link...";
-      msg.style.color = "#fff";
-
       try {
+        console.log("Tentando enviar magic link para:", email);
+
         const { error } = await supabase.auth.signInWithOtp({
           email: email,
           options: {
@@ -49,17 +52,17 @@
         });
 
         if (error) {
-          console.error(error);
-          msg.innerHTML = "❌ Erro: " + error.message;
+          console.error("Erro Supabase:", error);
+          msg.innerHTML = "❌ " + error.message;
           msg.style.color = "#ff6b6b";
         } else {
-          msg.innerHTML = "✅ Link enviado com sucesso!<br><small>Verifique sua caixa de entrada e também a pasta de Spam/Promoções.</small>";
+          msg.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada (e Spam).";
           msg.style.color = "#4ade80";
         }
       } catch (err) {
+        console.error("Erro completo:", err);
         msg.innerHTML = "❌ Erro inesperado. Veja o console (F12).";
         msg.style.color = "#ff6b6b";
-        console.error(err);
       }
     }
   </script>
