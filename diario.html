@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diário de Bordo</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body>
+  <h1>Registrar no Diário de Bordo</h1>
+  
+  <input type="text" id="acao" placeholder="Descreva a ação" />
+  <input type="text" id="competencia" placeholder="Código da competência" />
+  <input type="number" id="pontos" placeholder="Pontos" />
+  <button onclick="salvarRegistro()">Salvar</button>
+
+  <script>
+    async function salvarRegistro() {
+      const acao = document.getElementById('acao').value;
+      const competencia_codigo = document.getElementById('competencia').value;
+      const pontos = parseFloat(document.getElementById('pontos').value);
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) return alert("Faça login primeiro");
+
+      const { error } = await supabase
+        .from('diario_bordo')
+        .insert({
+          usuario_id: user.id,
+          acao: acao,
+          competencia_codigo: competencia_codigo,
+          pontos: pontos
+        });
+
+      if (error) alert("Erro: " + error.message);
+      else alert("Registro salvo com sucesso!");
+    }
+  </script>
+</body>
+</html>
