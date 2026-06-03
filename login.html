@@ -7,61 +7,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <style>
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: #071220;
-      color: white;
-      margin: 0;
-      padding: 40px 20px;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-box {
-      background: rgba(255,255,255,0.06);
-      padding: 50px 40px;
-      border-radius: 16px;
-      border: 1px solid rgba(74,155,196,0.3);
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
-    p { opacity: 0.8; margin-bottom: 30px; }
-    input {
-      width: 100%;
-      padding: 16px;
-      margin: 12px 0;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 16px;
-      background: #4A9BC4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover { background: #3b8ab3; }
-    #mensagem { margin-top: 20px; min-height: 24px; }
+    body { font-family: 'DM Sans', sans-serif; background: #071220; color: white; margin:0; padding:40px 20px; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    .login-box { background: rgba(255,255,255,0.06); padding:50px 40px; border-radius:16px; border:1px solid rgba(74,155,196,0.3); max-width:420px; width:100%; text-align:center; }
+    h1 { font-family: 'Cormorant Garamond', serif; font-size:42px; margin-bottom:10px; }
+    input { width:100%; padding:16px; margin:12px 0; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:white; font-size:16px; }
+    button { width:100%; padding:16px; background:#4A9BC4; color:white; border:none; border-radius:8px; font-size:15px; cursor:pointer; margin-top:10px; }
+    #mensagem { margin-top:20px; min-height:60px; }
   </style>
 </head>
 <body>
   <div class="login-box">
     <h1>EU⁺ Vida</h1>
-    <p>Entre com seu email</p>
+    <p>Digite seu email para receber o link de acesso</p>
     
     <input type="email" id="email" placeholder="seu@email.com" />
     <button onclick="enviarMagicLink()">Enviar Link Mágico</button>
@@ -75,7 +32,7 @@
       const msg = document.getElementById('mensagem');
 
       if (!email) {
-        msg.innerHTML = "❌ Por favor, digite seu email.";
+        msg.innerHTML = "❌ Digite um email válido.";
         msg.style.color = "#ff6b6b";
         return;
       }
@@ -83,4 +40,28 @@
       msg.innerHTML = "Enviando link...";
       msg.style.color = "#fff";
 
-      const { error } = await
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email,
+          options: {
+            emailRedirectTo: window.location.origin + '/dashboard.html'
+          }
+        });
+
+        if (error) {
+          console.error(error);
+          msg.innerHTML = "❌ Erro: " + error.message;
+          msg.style.color = "#ff6b6b";
+        } else {
+          msg.innerHTML = "✅ Link enviado com sucesso!<br><small>Verifique sua caixa de entrada e também a pasta de Spam/Promoções.</small>";
+          msg.style.color = "#4ade80";
+        }
+      } catch (err) {
+        msg.innerHTML = "❌ Erro inesperado. Veja o console (F12).";
+        msg.style.color = "#ff6b6b";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
