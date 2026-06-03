@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico - EU⁺ Vida</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+</head>
+<body>
+  <h1>Diagnóstico de Competências</h1>
+  <div id="lista-competencias"></div>
+
+  <script>
+    async function carregarDiagnostico() {
+      const { data: competencias, error } = await supabase
+        .from('competencias')
+        .select('*');
+
+      if (error) return console.error(error);
+
+      const container = document.getElementById('lista-competencias');
+      container.innerHTML = competencias.map(c => `
+        <div>
+          <h3>${c.nome}</h3>
+          <p>${c.definicao || ''}</p>
+        </div>
+      `).join('');
+    }
+
+    carregarDiagnostico();
+  </script>
+</body>
+</html>
