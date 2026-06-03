@@ -3,45 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EU⁺ Vida - Login</title>
+  <title>Entrar - EU⁺ Vida</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #071220;
+      color: white;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      background: rgba(255,255,255,0.05);
+      padding: 60px 40px;
+      border-radius: 16px;
+      border: 1px solid rgba(74,155,196,0.2);
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+    p { opacity: 0.8; margin-bottom: 40px; }
+    input {
+      width: 100%;
+      padding: 16px;
+      margin: 12px 0;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #4A9BC4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover { background: #3b8ab3; }
+  </style>
 </head>
 <body>
-  <h1>Entrar na EU⁺ Vida</h1>
-  
-  <input type="email" id="email" placeholder="Seu email" required />
-  <button onclick="enviarMagicLink()">Enviar Link Mágico</button>
-
-  <p id="mensagem"></p>
+  <div class="login-box">
+    <h1>EU⁺ Vida</h1>
+    <p>Entre com seu email</p>
+    
+    <input type="email" id="email" placeholder="seu@email.com" />
+    <button onclick="enviarMagicLink()">Enviar Link Mágico</button>
+    
+    <p id="mensagem" style="margin-top:20px; font-size:14px;"></p>
+  </div>
 
   <script>
     async function enviarMagicLink() {
       const email = document.getElementById('email').value;
-      const mensagem = document.getElementById('mensagem');
+      const msg = document.getElementById('mensagem');
 
-      if (!email) return alert("Digite seu email");
+      if (!email) {
+        msg.textContent = "Por favor, digite seu email.";
+        msg.style.color = "#ff6b6b";
+        return;
+      }
 
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
-        options: {
-          emailRedirectTo: window.location.origin + '/dashboard.html' // página após login
-        }
+        options: { emailRedirectTo: window.location.origin + '/dashboard.html' }
       });
 
       if (error) {
-        mensagem.textContent = "Erro: " + error.message;
-        mensagem.style.color = "red";
+        msg.textContent = "Erro: " + error.message;
+        msg.style.color = "#ff6b6b";
       } else {
-        mensagem.textContent = "Link mágico enviado! Verifique sua caixa de entrada.";
-        mensagem.style.color = "green";
+        msg.textContent = "✅ Link enviado! Verifique sua caixa de entrada.";
+        msg.style.color = "#4ade80";
       }
     }
-
-    // Verificar sessão ao carregar
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) window.location.href = 'dashboard.html';
-    });
   </script>
 </body>
 </html>
