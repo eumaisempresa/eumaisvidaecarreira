@@ -12,33 +12,33 @@
       background: #071220;
       color: white;
       margin: 0;
-      padding: 0;
-      height: 100vh;
+      padding: 40px 20px;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .login-box {
-      background: rgba(255,255,255,0.05);
-      padding: 60px 40px;
+      background: rgba(255,255,255,0.06);
+      padding: 50px 40px;
       border-radius: 16px;
-      border: 1px solid rgba(74,155,196,0.2);
+      border: 1px solid rgba(74,155,196,0.3);
       max-width: 420px;
-      width: 90%;
+      width: 100%;
       text-align: center;
     }
     h1 {
       font-family: 'Cormorant Garamond', serif;
       font-size: 42px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    p { opacity: 0.8; margin-bottom: 40px; }
+    p { opacity: 0.8; margin-bottom: 30px; }
     input {
       width: 100%;
       padding: 16px;
       margin: 12px 0;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 8px;
       color: white;
       font-size: 16px;
@@ -52,9 +52,10 @@
       border-radius: 8px;
       font-size: 15px;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 10px;
     }
     button:hover { background: #3b8ab3; }
+    #mensagem { margin-top: 20px; min-height: 24px; }
   </style>
 </head>
 <body>
@@ -65,33 +66,21 @@
     <input type="email" id="email" placeholder="seu@email.com" />
     <button onclick="enviarMagicLink()">Enviar Link Mágico</button>
     
-    <p id="mensagem" style="margin-top:20px; font-size:14px;"></p>
+    <p id="mensagem"></p>
   </div>
 
   <script>
     async function enviarMagicLink() {
-      const email = document.getElementById('email').value;
+      const email = document.getElementById('email').value.trim();
       const msg = document.getElementById('mensagem');
 
       if (!email) {
-        msg.textContent = "Por favor, digite seu email.";
+        msg.innerHTML = "❌ Por favor, digite seu email.";
         msg.style.color = "#ff6b6b";
         return;
       }
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: { emailRedirectTo: window.location.origin + '/dashboard.html' }
-      });
+      msg.innerHTML = "Enviando link...";
+      msg.style.color = "#fff";
 
-      if (error) {
-        msg.textContent = "Erro: " + error.message;
-        msg.style.color = "#ff6b6b";
-      } else {
-        msg.textContent = "✅ Link enviado! Verifique sua caixa de entrada.";
-        msg.style.color = "#4ade80";
-      }
-    }
-  </script>
-</body>
-</html>
+      const { error } = await
