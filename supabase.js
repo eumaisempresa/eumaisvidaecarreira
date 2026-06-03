@@ -1,4 +1,4 @@
-<!-- supabase.js -->
+<!-- supabase.js - Versão Completa -->
 <script>
   const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvZnZwbWVvZG9ubHZlZXllcWZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTUzOTUsImV4cCI6MjA5NDg5MTM5NX0.6ShcqgT7br4EvVnyJIaXX0apN8VlqJMPAJIRTrtZ5Ho';
@@ -13,15 +13,28 @@
 
   window.supabase = supabase;
 
+  // Listener global de autenticação
   supabase.auth.onAuthStateChange((event, session) => {
+    console.log('🔐 Supabase Auth Event:', event);
+
     if (event === 'SIGNED_OUT') {
-      if (window.location.pathname.includes('dashboard') || 
-          window.location.pathname.includes('diario') || 
-          window.location.pathname.includes('diagnostico')) {
+      const protectedPages = ['dashboard', 'diario', 'diagnostico', 'perfil'];
+      if (protectedPages.some(page => window.location.href.includes(page))) {
         window.location.href = 'login.html';
       }
     }
   });
 
-  console.log('✅ Supabase carregado com sucesso');
+  // Funções auxiliares úteis
+  window.getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  };
+
+  window.isLoggedIn = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return !!session;
+  };
+
+  console.log('✅ Supabase client carregado com sucesso (versão completa)');
 </script>
