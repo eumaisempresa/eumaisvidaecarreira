@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - EU⁺ Vida</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f8f5f0;
+      margin: 0;
+      padding: 0;
+      color: #0D0D0D;
+    }
+    header {
+      background: #0D0D0D;
+      color: white;
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 5%;
+    }
+    h1 { font-size: 32px; margin-bottom: 8px; }
+    .welcome { font-size: 18px; color: #555; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .card {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-8px); }
+    .card h3 { margin-bottom: 16px; color: #2A6A9E; }
+    button {
+      background: #2A6A9E;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover { background: #1f5a8a; }
+    .logout {
+      background: #e63939;
+    }
+    .status {
+      padding: 8px 16px;
+      background: #e0f2e9;
+      color: #2A6A9E;
+      border-radius: 30px;
+      font-size: 14px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">EU⁺ Vida</div>
+    <div>
+      <span id="user-email"></span>
+      <button onclick="logout()" class="logout" style="margin-left:20px;">Sair</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Bem-vindo de volta</h1>
+    <p class="welcome" id="user-name">Carregando...</p>
+    <span class="status">Plano: Gratuito</span>
+
+    <div class="grid">
+
+      <!-- Card Diagnóstico -->
+      <div class="card">
+        <h3>🧠 Diagnóstico</h3>
+        <p>Avalie suas competências e identifique gaps de desenvolvimento.</p>
+        <button onclick="window.location.href='diagnostico.html'">Iniciar Diagnóstico</button>
+      </div>
+
+      <!-- Card Diário de Bordo -->
+      <div class="card">
+        <h3>📖 Diário de Bordo</h3>
+        <p>Registre suas ações e acompanhe sua evolução diária.</p>
+        <button onclick="window.location.href='diario.html'">Registrar Ação</button>
+      </div>
+
+      <!-- Card Meu Perfil -->
+      <div class="card">
+        <h3>📊 Meu Perfil</h3>
+        <p>Visualize seu mapa de competências e nível atual.</p>
+        <button onclick="verPerfil()">Ver Meu Perfil</button>
+      </div>
+
+      <!-- Card Mercado -->
+      <div class="card">
+        <h3>🌍 Termômetro de Mercado</h3>
+        <p>Entenda quais competências estão em alta no mercado.</p>
+        <button onclick="alert('Em breve')">Ver Termômetro</button>
+      </div>
+
+    </div>
+
+    <h2 style="margin-top:60px;">Registros Recentes</h2>
+    <div id="registros-recentes"></div>
+  </div>
+
+  <script>
+    let currentUser = null;
+
+    async function loadDashboard() {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById('user-email').textContent = user.email;
+      document.getElementById('user-name').textContent = `Olá, ${user.email.split('@')[0]}`;
+
+      carregarRegistrosRecentes(user.id);
+    }
+
+    async function carregarRegistrosRecentes(userId) {
+      const { data, error } = await supabase
+        .from('diario_bordo')
+        .select('*')
+        .eq('usuario_id', userId)
+        .order('data', { ascending: false })
+        .limit(5);
+
+      if (error) return console.error(error);
+
+      const container = document.getElementById('registros-recentes');
+      if (data.length === 0) {
+        container.innerHTML = "<p>Nenhum registro ainda.</p>";
+        return;
+      }
+
+      container.innerHTML = data.map(item => `
+        <div style="background:white; padding:16px; margin-bottom:12px; border-radius:8px;">
+          <strong>${item.data}</strong> — ${item.acao}
+          ${item.competencia_codigo ? `<br><small>Competência: ${item.competencia_codigo} • ${item.pontos} pts</small>` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function verPerfil() {
+      alert("Funcionalidade de Perfil em desenvolvimento.\n\nEm breve você verá seu mapa completo de competências.");
+    }
+
+    function logout() {
+      supabase.auth.signOut().then(() => {
+        window.location.href = 'login.html';
+      });
+    }
+
+    // Inicializar dashboard
+    window.onload = loadDashboard;
+  </script>
+</body>
+</html>
