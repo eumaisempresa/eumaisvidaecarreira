@@ -1,100 +1,174 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entrar - EU⁺ Vida</title>
-  <!-- Carregamento padrão sem o defer para garantir a prioridade na leitura -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body { font-family: Arial, sans-serif; background:#071220; color:white; margin:0; padding:20px; text-align:center; }
-    .box { max-width:400px; margin:40px auto; background:rgba(255,255,255,0.1); padding:40px; border-radius:12px; }
-    input { width:100%; padding:15px; margin:15px 0; font-size:16px; border-radius:8px; border:none; color:black; }
-    button { width:100%; padding:16px; background:#4A9BC4; color:white; border:none; border-radius:8px; font-size:16px; margin-top:10px; cursor:pointer; }
-    #status { margin-top:20px; min-height:50px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — EU⁺ Vida Profissional</title>
+    <style>
+        /* Estilo simples e responsivo ideal para visualização e testes no celular */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #666;
+            font-size: 14px;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px; /* Evita que o zoom do celular quebre o layout */
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .mensagem {
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="box">
-    <h2>EU⁺ Vida</h2>
-    <p>Digite seu email</p>
+
+    <div class="login-container">
+        <h2>EU⁺ Vida Profissional</h2>
+        
+        <!-- Formulário de Login -->
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">E-mail de Acesso</label>
+                <input type="email" id="login-email" placeholder="seu@email.com" required>
+            </div>
+            <button type="submit">Entrar na Plataforma</button>
+        </form>
+
+        <!-- Elemento onde o script vai exibir as mensagens de sucesso ou erro -->
+        <div id="login-message" class="mensagem"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CONEXÃO COM O SUPABASE E COM O SCRIPT DE LOGIN -->
+    <!-- ========================================== -->
     
-    <input type="email" id="email" placeholder="seu@email.com" />
-    <button onclick="enviar()">Enviar Link Mágico</button>
-    <p id="status"></p>
-  </div>
+    <!-- 1º Importa a inteligência do Supabase direto da internet -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    // Configurações locais explícitas para evitar dependência de carregamento externo precoce
-    const URL_PROJETO = 'https://kofvpmeodonlveeyeqft.supabase.co';
-    const CHAVE_ANONIMA = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
-    let clienteSupabase = null;
+    <!-- 2º Executa a lógica de autenticação que criamos no passo anterior -->
+    <script>
+        // CONFIGURAÇÕES DO SEU PROJETO SUPABASE
+        const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
 
-    // Inicialização segura do cliente instanciando direto da biblioteca global carregada
-    try {
-      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-        clienteSupabase = window.supabase.createClient(URL_PROJETO, CHAVE_ANONIMA, {
-          auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+        const clientSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                autoRefreshToken: true,
+                persistSession: true,
+                detectSessionInUrl: true
+            }
         });
-      } else if (typeof supabase !== 'undefined' && supabase.createClient) {
-        clienteSupabase = supabase.createClient(URL_PROJETO, CHAVE_ANONIMA, {
-          auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
-        });
-      }
-    } catch (e) {
-      console.error("Erro ao inicializar o cliente Supabase:", e);
-    }
 
-    async function enviar() {
-      const email = document.getElementById('email').value.trim();
-      const status = document.getElementById('status');
-      
-      if (!email) {
-        status.innerHTML = "❌ Digite um email";
-        return;
-      }
+        // Gerencia o envio do formulário no celular
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('login-email');
+            const msgBox = document.getElementById('login-message');
+            const email = emailInput.value.trim();
 
-      status.innerHTML = "Enviando link...";
+            // Mostra aviso de carregamento
+            msgBox.textContent = "Enviando link de acesso...";
+            msgBox.style.color = "#007bff";
+            msgBox.style.display = "block";
 
-      // Se a inicialização falhou lá atrás, tentamos uma última instância direta aqui
-      if (!clienteSupabase) {
-        try {
-          const escopoSupabase = window.supabase || supabase;
-          if (escopoSupabase && escopoSupabase.createClient) {
-            clienteSupabase = escopoSupabase.createClient(URL_PROJETO, CHAVE_ANONIMA, {
-              auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+            // Dispara o Magic Link do Supabase
+            const { error } = await clientSupabase.auth.signInWithOtp({
+                email: email,
+                options: {
+                    emailRedirectTo: 'https://eumaisempresa.github.io/eumaisvida/dashboard.html'
+                }
             });
-          }
-        } catch(err) {
-          status.innerHTML = "❌ Erro: Biblioteca de autenticação indisponível no momento.";
-          return;
-        }
-      }
 
-      if (!clienteSupabase) {
-        status.innerHTML = "❌ Erro: Não foi possível conectar ao provedor de acesso.";
-        return;
-      }
-
-      try {
-        const { error } = await clienteSupabase.auth.signInWithOtp({
-          email: email,
-          options: {
-            emailRedirectTo: "https://eumaisempresa.github.io/eumaisvida/"
-          }
+            if (error) {
+                msgBox.textContent = "Erro ao enviar: " + error.message;
+                msgBox.style.color = "#ff4d4d";
+            } else {
+                msgBox.textContent = "Sucesso! Verifique sua caixa de entrada ou spam para acessar.";
+                msgBox.style.color = "#00cc66";
+            }
         });
 
-        if (error) {
-          status.innerHTML = "❌ Erro do Supabase: " + error.message;
-          console.error(error);
-        } else {
-          status.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada e Spam.";
-        }
-      } catch (err) {
-        status.innerHTML = "❌ Falha na requisição. Verifique sua conexão ou tente novamente em instantes.";
-        console.error(err);
-      }
-    }
-  </script>
+        // Roteador: Monitora se o usuário clicou no link do e-mail e valida o plano dele no banco
+        clientSupabase.auth.onAuthStateChange(async (event, session) => {
+            if (session && session.user) {
+                const emailUsuario = session.user.email;
+
+                try {
+                    // Busca qual plano você configurou para este e-mail no banco de dados
+                    const { data, error } = await clientSupabase
+                        .from('usuarios')
+                        .select('plano')
+                        .eq('email', emailUsuario)
+                        .single();
+
+                    // Se não achar o plano ou der erro, assume o gratuito
+                    let planoDefinido = (data && data.plano) ? data.plano.toLowerCase() : 'free';
+                    
+                    // Redireciona o usuário para a página correspondente ao plano dele
+                    if (planoDefinido === 'executivo' || planoDefinido === 'personalizado') {
+                        window.location.href = 'dashboard-executivo.html';
+                    } else if (planoDefinido === 'premium') {
+                        window.location.href = 'dashboard-premium.html';
+                    } else if (planoDefinido === 'basico') {
+                        window.location.href = 'dashboard-basico.html';
+                    } else {
+                        window.location.href = 'dashboard-gratuito.html';
+                    }
+
+                } catch (err) {
+                    console.error("Erro ao validar plano:", err);
+                    window.location.href = 'dashboard-gratuito.html';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
