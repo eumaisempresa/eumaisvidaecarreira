@@ -1,181 +1,214 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - EU⁺ Vida</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <style>
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #f8f5f0;
-      margin: 0;
-      padding: 0;
-      color: #0D0D0D;
-    }
-    header {
-      background: #0D0D0D;
-      color: white;
-      padding: 20px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: 700;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 5%;
-    }
-    h1 { font-size: 32px; margin-bottom: 8px; }
-    .welcome { font-size: 18px; color: #555; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      margin-top: 40px;
-    }
-    .card {
-      background: white;
-      padding: 32px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-    }
-    .card:hover { transform: translateY(-8px); }
-    .card h3 { margin-bottom: 16px; color: #2A6A9E; }
-    button {
-      background: #2A6A9E;
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:hover { background: #1f5a8a; }
-    .logout {
-      background: #e63939;
-    }
-    .status {
-      padding: 8px 16px;
-      background: #e0f2e9;
-      color: #2A6A9E;
-      border-radius: 30px;
-      font-size: 14px;
-      display: inline-block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Premium — EU⁺ Vida Profissional</title>
+    <style>
+        /* Design Premium responsivo para celular */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a; /* Tom escuro elegante */
+            margin: 0;
+            padding: 15px;
+            color: #f8fafc;
+        }
+        .header {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #ffffff;
+        }
+        .badge-plano {
+            display: inline-block;
+            background: linear-gradient(135deg, #eab308, #ca8a04); /* Dourado Premium */
+            color: #0f172a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .card {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            margin-bottom: 15px;
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #38bdf8; /* Azul claro destaque */
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+        .btn-acao-premium {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            box-sizing: border-box;
+            margin-top: 15px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+        .competencia-item {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-left: 4px solid #eab308; /* Borda dourada nas competências */
+            border-top: 1px solid #334155;
+            border-right: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+        }
+        .competencia-codigo {
+            font-weight: bold;
+            color: #eab308;
+        }
+        .bloco-ia {
+            background: linear-gradient(135deg, #1e1b4b, #311042);
+            border: 1px solid #581c87;
+        }
+        .tag-ia {
+            background-color: #a855f7;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .btn-logout {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: transparent;
+            color: #f1f5f9;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">EU⁺ Vida</div>
-    <div>
-      <span id="user-email"></span>
-      <button onclick="logout()" class="logout" style="margin-left:20px;">Sair</button>
-    </div>
-  </header>
-
-  <div class="container">
-    <h1>Bem-vindo de volta</h1>
-    <p class="welcome" id="user-name">Carregando...</p>
-    <span class="status">Plano: Gratuito</span>
-
-    <div class="grid">
-
-      <!-- Card Diagnóstico -->
-      <div class="card">
-        <h3>🧠 Diagnóstico</h3>
-        <p>Avalie suas competências e identifique gaps de desenvolvimento.</p>
-        <button onclick="window.location.href='diagnostico.html'">Iniciar Diagnóstico</button>
-      </div>
-
-      <!-- Card Diário de Bordo -->
-      <div class="card">
-        <h3>📖 Diário de Bordo</h3>
-        <p>Registre suas ações e acompanhe sua evolução diária.</p>
-        <button onclick="window.location.href='diario.html'">Registrar Ação</button>
-      </div>
-
-      <!-- Card Meu Perfil -->
-      <div class="card">
-        <h3>📊 Meu Perfil</h3>
-        <p>Visualize seu mapa de competências e nível atual.</p>
-        <button onclick="verPerfil()">Ver Meu Perfil</button>
-      </div>
-
-      <!-- Card Mercado -->
-      <div class="card">
-        <h3>🌍 Termômetro de Mercado</h3>
-        <p>Entenda quais competências estão em alta no mercado.</p>
-        <button onclick="alert('Em breve')">Ver Termômetro</button>
-      </div>
-
+    <!-- Cabeçalho do Usuário Premium -->
+    <div class="header">
+        <h1 id="user-email">Carregando usuário...</h1>
+        <span class="badge-plano">Plano Premium</span>
     </div>
 
-    <h2 style="margin-top:60px;">Registros Recentes</h2>
-    <div id="registros-recentes"></div>
-  </div>
+    <!-- Módulo Avançado com IA (Exclusivo Premium) -->
+    <div class="card bloco-ia">
+        <h2>Análise e Gaps com Inteligência Artificial <span class="tag-ia">ATIVO</span></h2>
+        <p style="font-size: 14px; color: #cbd5e1;">Acesso ilimitado ao mapeamento completo em 10 camadas, cruzamento de mercado e recomendações personalizadas por IA.</p>
+        <a href="diagnostico.html" class="btn-acao-premium">Realizar Diagnóstico Avançado</a>
+    </div>
 
-  <script>
-    let currentUser = null;
+    <!-- Histórico / Diário de Bordo -->
+    <div class="card">
+        <h2>Seu Diário de Bordo Profissional</h2>
+        <p style="font-size: 14px; color: #94a3b8;">Acompanhe sua evolução e registre seus REGs e ATIs fundacionais sem restrições de acessos.</p>
+        <a href="diario.html" style="background: #475569;" class="btn-acao-premium">Acessar Meu Diário</a>
+    </div>
 
-    async function loadDashboard() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      currentUser = user;
-      document.getElementById('user-email').textContent = user.email;
-      document.getElementById('user-name').textContent = `Olá, ${user.email.split('@')[0]}`;
-
-      carregarRegistrosRecentes(user.id);
-    }
-
-    async function carregarRegistrosRecentes(userId) {
-      const { data, error } = await supabase
-        .from('diario_bordo')
-        .select('*')
-        .eq('usuario_id', userId)
-        .order('data', { ascending: false })
-        .limit(5);
-
-      if (error) return console.error(error);
-
-      const container = document.getElementById('registros-recentes');
-      if (data.length === 0) {
-        container.innerHTML = "<p>Nenhum registro ainda.</p>";
-        return;
-      }
-
-      container.innerHTML = data.map(item => `
-        <div style="background:white; padding:16px; margin-bottom:12px; border-radius:8px;">
-          <strong>${item.data}</strong> — ${item.acao}
-          ${item.competencia_codigo ? `<br><small>Competência: ${item.competencia_codigo} • ${item.pontos} pts</small>` : ''}
+    <!-- Catálogo de Competências Sem Bloqueios (Puxa todas do banco) -->
+    <div class="card">
+        <h2>Catálogo de Competências (<span id="total-comp">0</span>)</h2>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Visão completa e irrestrita da matriz de competências da plataforma.</p>
+        <div id="lista-competencias">
+            <p style="font-size: 14px; color: #64748b;">Buscando base de dados...</p>
         </div>
-      `).join('');
-    }
+    </div>
 
-    async function verPerfil() {
-      alert("Funcionalidade de Perfil em desenvolvimento.\n\nEm breve você verá seu mapa completo de competências.");
-    }
+    <!-- Sair com segurança -->
+    <button class="btn-logout" id="btn-sair">Sair do Painel</button>
 
-    function logout() {
-      supabase.auth.signOut().then(() => {
-        window.location.href = 'login.html';
-      });
-    }
+    <!-- ========================================== -->
+    <!-- INTEGRAÇÃO COM O SUPABASE E REGRAS DE TELA -->
+    <!-- ========================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
 
-    // Inicializar dashboard
-    window.onload = loadDashboard;
-  </script>
+        const clientSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 1. Valida a sessão de segurança no celular
+        async function inicializarDashboard() {
+            const { data: { session } } = await clientSupabase.auth.getSession();
+
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('user-email').textContent = session.user.email;
+            carregarTodasCompetencias();
+        }
+
+        // 2. Carrega a lista completa de competências cadastradas do banco
+        async function carregarTodasCompetencias() {
+            const listaContainer = document.getElementById('lista-competencias');
+            const totalContador = document.getElementById('total-comp');
+
+            try {
+                const { data, error } = await clientSupabase
+                    .from('competencias')
+                    .select('id, codigo, nome')
+                    .order('codigo', { ascending: true });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    totalContador.textContent = data.length;
+                    listaContainer.innerHTML = '';
+
+                    data.forEach(comp => {
+                        const div = document.createElement('div');
+                        div.className = 'competencia-item';
+                        div.innerHTML = `<span class="competencia-codigo">[${comp.codigo}]</span> ${comp.nome}`;
+                        listaContainer.appendChild(div);
+                    });
+                } else {
+                    listaContainer.innerHTML = '<p style="font-size:14px; color:#64748b;">Nenhuma competência encontrada.</p>';
+                }
+
+            } catch (err) {
+                console.error("Erro ao carregar banco:", err);
+                listaContainer.innerHTML = '<p style="font-size:14px; color:#ef4444;">Erro na conexão com as competências.</p>';
+            }
+        }
+
+        // 3. Logout
+        document.getElementById('btn-sair').addEventListener('click', async () => {
+            await clientSupabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', inicializarDashboard);
+    </script>
 </body>
 </html>
