@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Entrar - EU⁺ Vida</title>
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="supabase.js"></script>
+  <!-- Carregamento padrão sem o defer para garantir a prioridade na leitura -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: Arial, sans-serif; background:#071220; color:white; margin:0; padding:20px; text-align:center; }
     .box { max-width:400px; margin:40px auto; background:rgba(255,255,255,0.1); padding:40px; border-radius:12px; }
@@ -25,6 +25,26 @@
   </div>
 
   <script>
+    // Configurações locais explícitas para evitar dependência de carregamento externo precoce
+    const URL_PROJETO = 'https://kofvpmeodonlveeyeqft.supabase.co';
+    const CHAVE_ANONIMA = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
+    let clienteSupabase = null;
+
+    // Inicialização segura do cliente instanciando direto da biblioteca global carregada
+    try {
+      if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+        clienteSupabase = window.supabase.createClient(URL_PROJETO, CHAVE_ANONIMA, {
+          auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+        });
+      } else if (typeof supabase !== 'undefined' && supabase.createClient) {
+        clienteSupabase = supabase.createClient(URL_PROJETO, CHAVE_ANONIMA, {
+          auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+        });
+      }
+    } catch (e) {
+      console.error("Erro ao inicializar o cliente Supabase:", e);
+    }
+
     async function enviar() {
       const email = document.getElementById('email').value.trim();
       const status = document.getElementById('status');
@@ -36,16 +56,30 @@
 
       status.innerHTML = "Enviando link...";
 
-      try {
-        if (typeof supabase === 'undefined') {
-          status.innerHTML = "❌ Erro: Aguarde 2 segundos para o carregamento e tente novamente.";
+      // Se a inicialização falhou lá atrás, tentamos uma última instância direta aqui
+      if (!clienteSupabase) {
+        try {
+          const escopoSupabase = window.supabase || supabase;
+          if (escopoSupabase && escopoSupabase.createClient) {
+            clienteSupabase = escopoSupabase.createClient(URL_PROJETO, CHAVE_ANONIMA, {
+              auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true }
+            });
+          }
+        } catch(err) {
+          status.innerHTML = "❌ Erro: Biblioteca de autenticação indisponível no momento.";
           return;
         }
+      }
 
-        const { error } = await supabase.auth.signInWithOtp({
+      if (!clienteSupabase) {
+        status.innerHTML = "❌ Erro: Não foi possível conectar ao provedor de acesso.";
+        return;
+      }
+
+      try {
+        const { error } = await clienteSupabase.auth.signInWithOtp({
           email: email,
           options: {
-            // Ajustado para bater exatamente com a URL de Redirect autorizada no seu painel
             emailRedirectTo: "https://eumaisempresa.github.io/eumaisvida/"
           }
         });
@@ -57,7 +91,7 @@
           status.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada e Spam.";
         }
       } catch (err) {
-        status.innerHTML = "❌ Erro inesperado de conexão. Verifique o cache ou mude de rede.";
+        status.innerHTML = "❌ Falha na requisição. Verifique sua conexão ou tente novamente em instantes.";
         console.error(err);
       }
     }
