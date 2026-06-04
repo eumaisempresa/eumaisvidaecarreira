@@ -20,20 +20,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
-
-        const clientSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: {
-                persistSession: true,
-                autoRefreshToken: true,
-                detectSessionInUrl: true 
+        const clientSupabase = supabase.createClient(
+            'https://kofvpmeodonlveeyeqft.supabase.co', 
+            'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM',
+            {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true 
+                }
             }
-        });
+        );
 
         async function processarRoteamento() {
             try {
-                // Pequena pausa estratégica para processamento do Hash nativo do Supabase
+                // Intervalo de segurança para captura e processamento do token na URL
                 await new Promise(resolve => setTimeout(resolve, 1200));
 
                 const { data: { session }, error: sessionError } = await clientSupabase.auth.getSession();
@@ -49,7 +50,7 @@
                     return;
                 }
 
-                // Faz a leitura do plano na tabela 'usuarios'
+                // Cruzamento de dados na tabela 'usuarios'
                 const { data, error } = await clientSupabase
                     .from('usuarios')
                     .select('plano')
@@ -57,7 +58,6 @@
                     .single();
 
                 if (error) {
-                    // Se autenticou no Auth mas não está listado na tabela, joga na gratuita por segurança
                     window.location.href = 'dashboard-gratuito.html';
                     return;
                 }
