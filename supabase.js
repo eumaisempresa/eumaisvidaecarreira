@@ -1,5 +1,4 @@
 const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
-// Atualizado com a sua chave pública real do projeto
 const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
 
 const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -35,4 +34,4 @@ window.isLoggedIn = async () => {
   return !!session;
 };
 
-console.log('✅ Supabase client carregado com sucesso (versão completa)');
+console.log('✅ Supabase client carregado com sucesso (versão estável)');
