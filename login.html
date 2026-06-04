@@ -4,13 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Entrar - EU⁺ Vida</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
+  <!-- O atributo defer garante que a biblioteca carregue primeiro -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- O atributo defer garante que suas configurações carreguem logo em seguida -->
+  <script defer src="supabase.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background:#071220; color:white; margin:0; padding:20px; text-align:center; }
     .box { max-width:400px; margin:40px auto; background:rgba(255,255,255,0.1); padding:40px; border-radius:12px; }
-    input { width:100%; padding:15px; margin:15px 0; font-size:16px; border-radius:8px; border:none; }
-    button { width:100%; padding:16px; background:#4A9BC4; color:white; border:none; border-radius:8px; font-size:16px; margin-top:10px; }
+    input { width:100%; padding:15px; margin:15px 0; font-size:16px; border-radius:8px; border:none; color:black; }
+    button { width:100%; padding:16px; background:#4A9BC4; color:white; border:none; border-radius:8px; font-size:16px; margin-top:10px; cursor:pointer; }
     #status { margin-top:20px; min-height:50px; }
   </style>
 </head>
@@ -36,18 +38,29 @@
 
       status.innerHTML = "Enviando link...";
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email,
-        options: {
-          emailRedirectTo: "https://eumaisempresa.github.io/eumaisvida/dashboard.html"
+      try {
+        // Verifica se a biblioteca do Supabase está disponível antes de disparar
+        if (typeof supabase === 'undefined') {
+          status.innerHTML = "❌ Erro: O cliente Supabase não foi carregado corretamente. Aguarde um instante e tente novamente.";
+          return;
         }
-      });
 
-      if (error) {
-        status.innerHTML = "❌ Erro: " + error.message;
-        console.error(error);
-      } else {
-        status.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada e Spam.";
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email,
+          options: {
+            emailRedirectTo: "https://eumaisempresa.github.io/eumaisvida/dashboard.html"
+          }
+        });
+
+        if (error) {
+          status.innerHTML = "❌ Erro: " + error.message;
+          console.error(error);
+        } else {
+          status.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada e Spam.";
+        }
+      } catch (err) {
+        status.innerHTML = "❌ Erro inesperado ao executar a requisição.";
+        console.error(err);
       }
     }
   </script>
