@@ -19,7 +19,6 @@
   body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
   body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
 
-  /* SIDEBAR (DESKTOP) */
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 72px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 24px 0; gap: 8px; z-index: 100; }
   .logo-mark { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 18px; color: #000; margin-bottom: 24px; flex-shrink: 0; }
   
@@ -30,7 +29,6 @@
   .nav-tooltip { position: absolute; left: 56px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); font-size: 12px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 200; font-family: var(--font-mono); }
   .nav-item:hover .nav-tooltip { opacity: 1; }
 
-  /* MAIN CONTENT AREA */
   .main { margin-left: 72px; padding: 32px; position: relative; z-index: 1; }
   .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; gap: 16px; }
   .topbar-left h1 { font-family: var(--font-display); font-size: 32px; letter-spacing: 2px; color: var(--text); line-height: 1; }
@@ -40,7 +38,6 @@
   .score-num { font-family: var(--font-display); font-size: 28px; color: var(--accent); letter-spacing: 1px; line-height: 1; }
   .score-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
 
-  /* PANELS AND GRIDS */
   .panel { display: none; }
   .panel.active { display: block; }
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -57,7 +54,6 @@
   .btn-logout { background: transparent; border: 1px solid var(--border2); color: var(--text2); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
   .btn-logout:hover { background: rgba(255,59,92,0.1); border-color: var(--red); color: var(--red); }
 
-  /* RESPONSIVIDADE TOTAL (MOBILE-FIRST) */
   @media (max-width: 868px) {
     .sidebar { position: fixed; bottom: 0; left: 0; right: 0; top: auto; width: 100vw; height: 60px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border2); background: rgba(13, 21, 32, 0.95); backdrop-filter: blur(10px); }
     .logo-mark { display: none; }
@@ -113,7 +109,6 @@
     </div>
   </div>
 
-  <!-- ABAS COMPLEMENTARES -->
   <div id="panel-radar" class="panel"><div class="card"><div class="card-label">Radar</div><p style="color:var(--text2)">Mapeamento Multidimensional Avançado.</p></div></div>
   <div id="panel-competencias" class="panel"><div class="card"><div class="card-label">Skills</div><p style="color:var(--text2)">Matriz ativa de soft e hard skills.</p></div></div>
   <div id="panel-heatmap" class="panel"><div class="card"><div class="card-label">Gaps</div><p style="color:var(--text2)">Zonas de calor de desenvolvimento imediato.</p></div></div>
@@ -121,13 +116,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const clientSupabase = supabase.createClient('https://kofvpmeodonlveeyeqft.supabase.co', 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM');
+  const clientSupabase = supabase.createClient(
+      'https://kofvpmeodonlveeyeqft.supabase.co', 
+      'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM'
+  );
 
   function showPanel(panelId, titleText) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.getElementById('panel-' + panelId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    if(event && event.currentTarget) { event.currentTarget.classList.add('active'); }
     document.getElementById('panel-title').textContent = titleText;
   }
 
