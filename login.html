@@ -10,9 +10,10 @@
         h2 { color: #00d4ff; margin-bottom: 24px; font-size: 22px; }
         .form-group { margin-bottom: 16px; text-align: left; }
         label { display: block; margin-bottom: 6px; color: #8fa3bb; font-size: 14px; }
-        input[type="email"] { width: 100%; padding: 12px; background: #111d2e; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: white; box-sizing: border-box; font-size: 16px; }
+        input[type="email"] { width: 100%; padding: 12px; background: #111d2e; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
+        input[type="email"]:focus { border-color: #00d4ff; }
         button { width: 100%; padding: 12px; background-color: #00d4ff; color: #000; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .mensagem { margin-top: 15px; font-size: 14px; display: none; }
+        .mensagem { margin-top: 15px; font-size: 14px; display: none; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -47,7 +48,6 @@
             msgBox.style.color = "#00d4ff";
             msgBox.style.display = "block";
 
-            // Correção da URL destino configurada para a nova estrutura de pastas
             const { error } = await clientSupabase.auth.signInWithOtp({
                 email: email,
                 options: {
