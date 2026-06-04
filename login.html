@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — EU⁺ Vida Profissional</title>
     <style>
-        /* Estilo simples e responsivo ideal para visualização e testes no celular */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7f6;
@@ -44,7 +43,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
-            font-size: 16px; /* Evita que o zoom do celular quebre o layout */
+            font-size: 16px;
         }
         button {
             width: 100%;
@@ -71,8 +70,6 @@
 
     <div class="login-container">
         <h2>EU⁺ Vida Profissional</h2>
-        
-        <!-- Formulário de Login -->
         <form id="login-form">
             <div class="form-group">
                 <label for="login-email">E-mail de Acesso</label>
@@ -80,33 +77,21 @@
             </div>
             <button type="submit">Entrar na Plataforma</button>
         </form>
-
-        <!-- Elemento onde o script vai exibir as mensagens de sucesso ou erro -->
         <div id="login-message" class="mensagem"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- CONEXÃO COM O SUPABASE E COM O SCRIPT DE LOGIN -->
-    <!-- ========================================== -->
-    
-    <!-- 1º Importa a inteligência do Supabase direto da internet -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- 2º Executa a lógica de autenticação que criamos no passo anterior -->
     <script>
-        // CONFIGURAÇÕES DO SEU PROJETO SUPABASE
         const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
 
         const clientSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: {
-                autoRefreshToken: true,
                 persistSession: true,
-                detectSessionInUrl: true
+                autoRefreshToken: true
             }
         });
 
-        // Gerencia o envio do formulário no celular
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -114,12 +99,11 @@
             const msgBox = document.getElementById('login-message');
             const email = emailInput.value.trim();
 
-            // Mostra aviso de carregamento
             msgBox.textContent = "Enviando link de acesso...";
             msgBox.style.color = "#007bff";
             msgBox.style.display = "block";
 
-            // Dispara o Magic Link do Supabase
+            // Correção técnica: O link aponta para o repositório, deixando o roteador capturar os tokens nativamente
             const { error } = await clientSupabase.auth.signInWithOtp({
                 email: email,
                 options: {
@@ -131,42 +115,15 @@
                 msgBox.textContent = "Erro ao enviar: " + error.message;
                 msgBox.style.color = "#ff4d4d";
             } else {
-                msgBox.textContent = "Sucesso! Verifique sua caixa de entrada ou spam para acessar.";
+                msgBox.textContent = "Sucesso! Verifique seu e-mail para acessar a plataforma.";
                 msgBox.style.color = "#00cc66";
             }
         });
 
-        // Roteador: Monitora se o usuário clicou no link do e-mail e valida o plano dele no banco
+        // Escuta se a sessão foi confirmada localmente no dispositivo
         clientSupabase.auth.onAuthStateChange(async (event, session) => {
             if (session && session.user) {
-                const emailUsuario = session.user.email;
-
-                try {
-                    // Busca qual plano você configurou para este e-mail no banco de dados
-                    const { data, error } = await clientSupabase
-                        .from('usuarios')
-                        .select('plano')
-                        .eq('email', emailUsuario)
-                        .single();
-
-                    // Se não achar o plano ou der erro, assume o gratuito
-                    let planoDefinido = (data && data.plano) ? data.plano.toLowerCase() : 'free';
-                    
-                    // Redireciona o usuário para a página correspondente ao plano dele
-                    if (planoDefinido === 'executivo' || planoDefinido === 'personalizado') {
-                        window.location.href = 'dashboard-executivo.html';
-                    } else if (planoDefinido === 'premium') {
-                        window.location.href = 'dashboard-premium.html';
-                    } else if (planoDefinido === 'basico') {
-                        window.location.href = 'dashboard-basico.html';
-                    } else {
-                        window.location.href = 'dashboard-gratuito.html';
-                    }
-
-                } catch (err) {
-                    console.error("Erro ao validar plano:", err);
-                    window.location.href = 'dashboard-gratuito.html';
-                }
+                window.location.href = 'dashboard.html';
             }
         });
     </script>
