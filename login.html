@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Linha adicionada para dar permissão de conexão ao celular -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.supabase.co https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.supabase.co; connect-src 'self' https://*.supabase.co; style-src 'self' 'unsafe-inline';">
+  
   <title>Entrar - EU⁺ Vida</title>
-  <!-- O atributo defer garante que a biblioteca carregue primeiro -->
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- O atributo defer garante que suas configurações carreguem logo em seguida -->
   <script defer src="supabase.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background:#071220; color:white; margin:0; padding:20px; text-align:center; }
@@ -39,9 +40,8 @@
       status.innerHTML = "Enviando link...";
 
       try {
-        // Verifica se a biblioteca do Supabase está disponível antes de disparar
         if (typeof supabase === 'undefined') {
-          status.innerHTML = "❌ Erro: O cliente Supabase não foi carregado corretamente. Aguarde um instante e tente novamente.";
+          status.innerHTML = "❌ Erro: O cliente Supabase não foi carregado. Aguarde 2 segundos e tente novamente.";
           return;
         }
 
@@ -59,7 +59,7 @@
           status.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada e Spam.";
         }
       } catch (err) {
-        status.innerHTML = "❌ Erro inesperado ao executar a requisição.";
+        status.innerHTML = "❌ Erro inesperado ao executar a requisição de rede.";
         console.error(err);
       }
     }
