@@ -27,14 +27,14 @@
             auth: {
                 persistSession: true,
                 autoRefreshToken: true,
-                detectSessionInUrl: true // Captura automática e tratamento local do hash do e-mail
+                detectSessionInUrl: true 
             }
         });
 
         async function processarRoteamento() {
             try {
-                // Aguarda o disparo interno do Supabase para ler a URL vindouro do e-mail
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                // Pequena pausa estratégica para processamento do Hash nativo do Supabase
+                await new Promise(resolve => setTimeout(resolve, 1200));
 
                 const { data: { session }, error: sessionError } = await clientSupabase.auth.getSession();
 
@@ -45,12 +45,11 @@
                 }
 
                 if (!session) {
-                    // Sem sessão ativa ou pendente, devolve para segurança
                     window.location.href = 'login.html';
                     return;
                 }
 
-                // Busca o plano do Protagonista na tabela
+                // Faz a leitura do plano na tabela 'usuarios'
                 const { data, error } = await clientSupabase
                     .from('usuarios')
                     .select('plano')
@@ -58,7 +57,7 @@
                     .single();
 
                 if (error) {
-                    // Caso o e-mail não esteja na tabela mas passou pelo Auth, trata como gratuito por padrão de segurança
+                    // Se autenticou no Auth mas não está listado na tabela, joga na gratuita por segurança
                     window.location.href = 'dashboard-gratuito.html';
                     return;
                 }
@@ -72,7 +71,7 @@
                 }
 
             } catch (err) {
-                document.getElementById('status-erro').textContent = "Falha no sistema: " + err.message;
+                document.getElementById('status-erro').textContent = "Falha crítica de comunicação: " + err.message;
                 document.getElementById('status-erro').style.display = 'block';
             }
         }
