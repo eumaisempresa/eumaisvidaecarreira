@@ -3,80 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EU⁺ — Autenticando Protagonista</title>
+    <title>Carregando...</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #080c10; color: #e8edf4; text-align: center; }
-        .loader { border: 4px solid #111d2e; border-top: 4px solid #00d4ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        body { background: #080c10; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+        .loader { border: 4px solid #111d2e; border-top: 4px solid #00d4ff; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #status-erro { color: #ff3b5c; font-weight: bold; margin-top: 15px; display: none; background: rgba(255,59,92,0.1); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,59,92,0.2); max-width: 90%; }
     </style>
 </head>
 <body>
-
-    <div class="loader"></div>
-    <h2>Reconhecendo sua assinatura...</h2>
-    <p>Conectando ao ecossistema EU⁺ Vida e Carreira.</p>
-    <div id="status-erro"></div>
+    <div style="text-align: center;">
+        <div class="loader" style="margin: 0 auto 15px;"></div>
+        <p>Validando acesso do Protagonista...</p>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="Supabase.js"></script>
     <script>
-        const clientSupabase = supabase.createClient(
-            'https://kofvpmeodonlveeyeqft.supabase.co', 
-            'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM',
-            {
-                auth: {
-                    persistSession: true,
-                    autoRefreshToken: true,
-                    detectSessionInUrl: true 
-                }
+        async function iniciarRoteamento() {
+            // Aguarda o Supabase processar o token da URL
+            await new Promise(r => setTimeout(r, 1500));
+
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
             }
-        );
 
-        async function processarRoteamento() {
-            try {
-                // Intervalo de segurança para captura e processamento do token na URL
-                await new Promise(resolve => setTimeout(resolve, 1200));
+            // Busca o plano na sua tabela de 'usuarios'
+            const { data, error } = await supabase
+                .from('usuarios')
+                .select('plano')
+                .eq('email', session.user.email)
+                .single();
 
-                const { data: { session }, error: sessionError } = await clientSupabase.auth.getSession();
-
-                if (sessionError) {
-                    document.getElementById('status-erro').textContent = "Erro de Autenticação: " + sessionError.message;
-                    document.getElementById('status-erro').style.display = 'block';
-                    return;
-                }
-
-                if (!session) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                // Cruzamento de dados na tabela 'usuarios'
-                const { data, error } = await clientSupabase
-                    .from('usuarios')
-                    .select('plano')
-                    .eq('email', session.user.email)
-                    .single();
-
-                if (error) {
-                    window.location.href = 'dashboard-gratuito.html';
-                    return;
-                }
-
-                let plano = data && data.plano ? data.plano.toLowerCase() : 'free';
-
-                if (plano === 'premium') {
-                    window.location.href = 'dashboard-premium.html';
-                } else {
-                    window.location.href = 'dashboard-gratuito.html';
-                }
-
-            } catch (err) {
-                document.getElementById('status-erro').textContent = "Falha crítica de comunicação: " + err.message;
-                document.getElementById('status-erro').style.display = 'block';
+            // Se for Premium, vai para o premium. Se der erro ou for free, vai para o gratuito.
+            if (data && data.plano.toLowerCase() === 'premium') {
+                window.location.href = 'dashboard-premium.html';
+            } else {
+                window.location.href = 'dashboard-gratuito.html';
             }
         }
-
-        window.addEventListener('DOMContentLoaded', processarRoteamento);
+        window.addEventListener('DOMContentLoaded', iniciarRoteamento);
     </script>
 </body>
 </html>
