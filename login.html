@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Linha adicionada para dar permissão de conexão ao celular -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.supabase.co https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.supabase.co; connect-src 'self' https://*.supabase.co; style-src 'self' 'unsafe-inline';">
-  
   <title>Entrar - EU⁺ Vida</title>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="supabase.js"></script>
@@ -41,25 +38,26 @@
 
       try {
         if (typeof supabase === 'undefined') {
-          status.innerHTML = "❌ Erro: O cliente Supabase não foi carregado. Aguarde 2 segundos e tente novamente.";
+          status.innerHTML = "❌ Erro: Aguarde 2 segundos para o carregamento e tente novamente.";
           return;
         }
 
         const { error } = await supabase.auth.signInWithOtp({
           email: email,
           options: {
-            emailRedirectTo: "https://eumaisempresa.github.io/eumaisvida/dashboard.html"
+            // Ajustado para bater exatamente com a URL de Redirect autorizada no seu painel
+            emailRedirectTo: "https://eumaisempresa.github.io/eumaisvida/"
           }
         });
 
         if (error) {
-          status.innerHTML = "❌ Erro: " + error.message;
+          status.innerHTML = "❌ Erro do Supabase: " + error.message;
           console.error(error);
         } else {
           status.innerHTML = "✅ Link enviado!<br>Verifique sua caixa de entrada e Spam.";
         }
       } catch (err) {
-        status.innerHTML = "❌ Erro inesperado ao executar a requisição de rede.";
+        status.innerHTML = "❌ Erro inesperado de conexão. Verifique o cache ou mude de rede.";
         console.error(err);
       }
     }
