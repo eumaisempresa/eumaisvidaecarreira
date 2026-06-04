@@ -3,65 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — EU⁺ Vida e Carreira</title>
+    <title>Login — EU⁺</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #080c10; color: #e8edf4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-container { background-color: #0d1520; padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); width: 100%; max-width: 360px; text-align: center; }
-        h2 { color: #00d4ff; margin-bottom: 24px; font-size: 22px; }
-        .form-group { margin-bottom: 16px; text-align: left; }
-        label { display: block; margin-bottom: 6px; color: #8fa3bb; font-size: 14px; }
-        input[type="email"] { width: 100%; padding: 12px; background: #111d2e; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
-        input[type="email"]:focus { border-color: #00d4ff; }
-        button { width: 100%; padding: 12px; background-color: #00d4ff; color: #000; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .mensagem { margin-top: 15px; font-size: 14px; display: none; line-height: 1.4; }
+        body { font-family: Arial, sans-serif; background-color: #080c10; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #0d1520; padding: 30px; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; border: 1px solid #1e293b; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #334155; background: #111d2e; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #00d4ff; color: black; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        #msg { margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
-
-    <div class="login-container">
-        <h2>EU⁺ Vida e Carreira</h2>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="login-email">E-mail do Protagonista</label>
-                <input type="email" id="login-email" placeholder="seu@email.com" required>
-            </div>
-            <button type="submit">Receber Link de Acesso</button>
-        </form>
-        <div id="login-message" class="mensagem"></div>
+    <div class="box">
+        <h2>Entrar</h2>
+        <p style="font-size: 14px; color: #8fa3bb;">Digite seu e-mail para receber o link de acesso.</p>
+        <input type="email" id="email" placeholder="seu@email.com">
+        <button onclick="enviarLink()">Receber Link</button>
+        <div id="msg"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="Supabase.js"></script>
     <script>
-        const clientSupabase = supabase.createClient(
-            'https://kofvpmeodonlveeyeqft.supabase.co', 
-            'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM',
-            { auth: { persistSession: true, autoRefreshToken: true } }
-        );
+        async function enviarLink() {
+            const email = document.getElementById('email').value;
+            const msg = document.getElementById('msg');
+            msg.innerText = "Enviando...";
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const msgBox = document.getElementById('login-message');
-
-            msgBox.textContent = "Gerando link mágico...";
-            msgBox.style.color = "#00d4ff";
-            msgBox.style.display = "block";
-
-            const { error } = await clientSupabase.auth.signInWithOtp({
+            const { error } = await supabase.auth.signInWithOtp({
                 email: email,
                 options: {
+                    // AQUI ESTÁ O NOVO ENDEREÇO
                     emailRedirectTo: 'https://eumaisempresa.github.io/eumaisvidaecarreira/dashboard.html'
                 }
             });
 
             if (error) {
-                msgBox.textContent = "Erro: " + error.message;
-                msgBox.style.color = "#ff3b5c";
+                msg.innerText = "Erro: " + error.message;
+                msg.style.color = "#ff3b5c";
             } else {
-                msgBox.textContent = "Sucesso! Verifique seu e-mail para acessar a sua Área.";
-                msgBox.style.color = "#00e87a";
+                msg.innerText = "Verifique seu e-mail!";
+                msg.style.color = "#00e87a";
             }
-        });
+        }
     </script>
 </body>
 </html>
