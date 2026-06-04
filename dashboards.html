@@ -31,64 +31,97 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        #status-erro {
+            color: #ff4d4d;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ffcccc;
+            max-width: 90%;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body>
 
-    <div class="loader"></div>
-    <h2>Identificando seu plano de acesso...</h2>
-    <p>Por favor, aguarde um instante para ser redirecionado.</p>
+    <div class="loader" id="loader-icon"></div>
+    <h2 id="status-titulo">Identificando seu plano de acesso...</h2>
+    <p id="status-subtitulo">Por favor, aguarde um instante para ser redirecionado.</p>
+    <div id="status-erro"></div>
 
-    <!-- CONEXÃO E LÓGICA DO SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
 
-        const clientSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const clientSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true // Força o script a caçar os dados do token direto na URL do navegador
+            }
+        });
+
+        function mostrarErroNaTela(mensagem) {
+            document.getElementById('loader-icon').style.display = 'none';
+            document.getElementById('status-titulo').textContent = 'Ops! Algo deu errado';
+            document.getElementById('status-subtitulo').textContent = 'Veja o detalhe do problema abaixo:';
+            
+            const erroBox = document.getElementById('status-erro');
+            erroBox.textContent = message;
+            erroBox.style.display = 'block';
+        }
 
         async function processarRoteamento() {
-            // 1. Verifica se o usuário acabou de vir do link do e-mail e pegou a sessão
-            const { data: { session }, error: sessionError } = await clientSupabase.auth.getSession();
-
-            if (sessionError || !session) {
-                console.log("Sem sessão ativa. Retornando ao login.");
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const emailUsuario = session.user.email;
-
             try {
-                // 2. Busca o plano real correspondente ao e-mail na tabela 'usuarios'
+                // Pequena pausa para garantir que o navegador processou os hashes da URL do redirecionamento
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                const { data: { session }, error: sessionError } = await clientSupabase.auth.getSession();
+
+                if (sessionError) {
+                    mostrarErroNaTela("Erro na sessão: " + sessionError.message);
+                    return;
+                }
+
+                if (!session) {
+                    // Caso não encontre de primeira, tenta validar se o evento disparou a sessão no background
+                    const { data: { user } } = await clientSupabase.auth.getUser();
+                    if (!user) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                }
+
+                const emailUsuario = session ? session.user.email : (await clientSupabase.auth.getUser()).data.user.email;
+
                 const { data, error } = await clientSupabase
                     .from('usuarios')
                     .select('plano')
                     .eq('email', emailUsuario)
                     .single();
 
-                // Se houver erro ou o usuário não estiver na tabela, define como gratuito por segurança
+                if (error) {
+                    mostrarErroNaTela("Erro ao ler tabela 'usuarios': " + error.message);
+                    return;
+                }
+
                 let planoDefinido = (data && data.plano) ? data.plano.toLowerCase() : 'free';
 
-                // 3. Executa o redirecionamento forçado para as novas páginas baseadas nos extremos
                 if (planoDefinido === 'premium') {
                     window.location.href = 'dashboard-premium.html';
-                } else if (planoDefinido === 'basico') {
-                    // Temporariamente joga para o gratuito até criarmos o básico, evitando links quebrados
-                    window.location.href = 'dashboard-gratuito.html';
-                } else if (planoDefinido === 'executivo' || planoDefinido === 'personalizado') {
-                    window.location.href = 'dashboard-premium.html'; // Pega a experiência máxima por enquanto
                 } else {
                     window.location.href = 'dashboard-gratuito.html';
                 }
 
             } catch (err) {
-                console.error("Erro no roteamento:", err);
-                window.location.href = 'dashboard-gratuito.html';
+                mostrarErroNaTela("Erro de execução: " + err.message);
             }
         }
 
-        // Executa a checagem imediatamente assim que a página abre no navegador
         window.addEventListener('DOMContentLoaded', processarRoteamento);
     </script>
 </body>
