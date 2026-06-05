@@ -3,33 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EU⁺ Vida e Carreira</title>
+    <title>EU⁺ — Vida e Carreira</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; justify-content: center; align-items: center; text-align: center; }
-        .container { padding: 20px; max-width: 400px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #111; font-size: 24px; }
-        p { color: #666; line-height: 1.5; margin-bottom: 25px; }
-        .btn { display: block; width: 100%; padding: 15px; background: #007bff; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; box-sizing: border-box; }
+        :root {
+            --bg-principal: #080c10;
+            --bg-card: #0d1520;
+            --texto: #f4f7f6;
+            --destaque: #00d4ff;
+            --borda: #1e293b;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--texto);
+            margin-bottom: 10px;
+        }
+        .logo span {
+            color: var(--destaque);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        p {
+            color: #8fa3bb;
+            line-height: 1.6;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        .features {
+            background: var(--bg-card);
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 35px;
+            text-align: left;
+        }
+        .feature-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .feature-item:last-child { margin-bottom: 0; }
+        .feature-item strong { color: var(--destaque); }
+        
+        .botoes-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .btn {
+            display: block;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .btn-principal {
+            background: var(--destaque);
+            color: #000;
+        }
+        .btn-principal:hover {
+            background: #00b8dc;
+        }
+        .btn-secundario {
+            background: transparent;
+            color: var(--texto);
+            border: 1px solid var(--borda);
+        }
+        .btn-secundario:hover {
+            background: var(--bg-card);
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>EU⁺ Vida e Carreira</h1>
-        <p>Bem-vindo ao seu ecossistema de evolução profissional. Acesse sua área exclusiva para gerenciar suas competências.</p>
-        <a href="login.html" class="btn">Área do Protagonista</a>
+        <div class="logo">EU<span>⁺</span></div>
+        <h1>Ecossistema Vida e Carreira</h1>
+        
+        <p>
+            O <strong>EU⁺ Vida e Carreira</strong> é uma plataforma de inteligência estratégica desenhada para transformar profissionais em protagonistas de suas jornadas. Através de diagnósticos contínuos, mapeamento de competências e um diário de bordo estruturado, você assume o controle do seu crescimento.
+        </p>
+
+        <div class="features">
+            <div class="feature-item">
+                <p style="margin: 0;">🎯 <strong>Diagnóstico de Competências:</strong> Avalie onde você está e identifique seus gaps de evolução de forma visual.</p>
+            </div>
+            <div class="feature-item">
+                <p style="margin: 0;">📖 <strong>Diário de Bordo:</strong> Registre suas ações estratégicas diárias e mantenha a consistência.</p>
+            </div>
+            <div class="feature-item">
+                <p style="margin: 0;">📊 <strong>Inteligência de Dados:</strong> Dashboards dinâmicos para acompanhar seu progresso real.</p>
+            </div>
+        </div>
+
+        <div class="botoes-grupo">
+            <!-- Se já é cliente, vai para a tela de login (que agora é a segunda página) -->
+            <a href="login.html" class="btn btn-principal">Já sou Protagonista (Acessar)</a>
+            
+            <!-- Se não é cliente, link para preencher a ficha de interesse (coloque o link do seu Typeform/Google Forms aqui) -->
+            <a href="https://link-da-sua-ficha-de-interesse.com" target="_blank" class="btn btn-secundario">Quero Fazer Parte (Enviar Ficha)</a>
+        </div>
     </div>
 
+    <!-- SCRIPTS NA ORDEM CORRETA SEGUNDO O DIAGNÓSTICO -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="Supabase.js"></script>
+    <script src="supabase.js"></script>
     <script>
-        async function verificarSessao() {
-            // 'supabase' vem do seu arquivo Supabase.js
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                window.location.href = 'dashboard.html';
+        // Se o usuário já tiver uma sessão ativa no navegador dele, 
+        // ele pula essa página e vai direto para o dashboard sem precisar logar de novo.
+        async function checarSessaoAtiva() {
+            if (typeof supabase !== 'undefined') {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    window.location.href = 'dashboard.html';
+                }
             }
         }
-        document.addEventListener('DOMContentLoaded', verificarSessao);
+        document.addEventListener('DOMContentLoaded', checarSessaoAtiva);
     </script>
 </body>
 </html>
