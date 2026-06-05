@@ -7,42 +7,59 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #080c10; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .box { background: #0d1520; padding: 30px; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; border: 1px solid #1e293b; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #334155; background: #111d2e; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #00d4ff; color: black; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        #msg { margin-top: 15px; font-size: 14px; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #334155; background: #111d2e; color: white; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: #00d4ff; }
+        button { width: 100%; padding: 12px; background: #00d4ff; color: black; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        #msg { margin-top: 15px; font-size: 14px; line-height: 1.4; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2>Entrar</h2>
-        <p style="font-size: 14px; color: #8fa3bb;">Digite seu e-mail para receber o link de acesso.</p>
-        <input type="email" id="email" placeholder="seu@email.com">
-        <button onclick="enviarLink()">Receber Link</button>
+        <h2>Área do Protagonista</h2>
+        <p style="font-size: 14px; color: #8fa3bb;">Digite seu e-mail cadastrado para receber o link mágico de acesso.</p>
+        <input type="email" id="email" placeholder="seu@email.com" required>
+        <button onclick="enviarLinkMagico()">Receber Link</button>
         <div id="msg"></div>
     </div>
 
+    <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="Supabase.js"></script>
+    <script src="supabase.js"></script>
     <script>
-        async function enviarLink() {
-            const email = document.getElementById('email').value;
+        async function enviarLinkMagico() {
+            const emailInput = document.getElementById('email').value.trim();
             const msg = document.getElementById('msg');
-            msg.innerText = "Enviando...";
-
-            const { error } = await supabase.auth.signInWithOtp({
-                email: email,
-                options: {
-                    // AQUI ESTÁ O NOVO ENDEREÇO
-                    emailRedirectTo: 'https://eumaisempresa.github.io/eumaisvidaecarreira/dashboard.html'
-                }
-            });
-
-            if (error) {
-                msg.innerText = "Erro: " + error.message;
+            
+            if (!emailInput) {
+                msg.innerText = "Por favor, digite seu e-mail.";
                 msg.style.color = "#ff3b5c";
-            } else {
-                msg.innerText = "Verifique seu e-mail!";
-                msg.style.color = "#00e87a";
+                return;
+            }
+
+            msg.innerText = "Gerando link de acesso...";
+            msg.style.color = "#00d4ff";
+
+            try {
+                const { error } = await supabase.auth.signInWithOtp({
+                    email: emailInput,
+                    options: {
+                        // URL exata homologada para o novo repositório
+                        emailRedirectTo: 'https://eumaisempresa.github.io/eumaisvidaecarreira/dashboard.html'
+                    }
+                });
+
+                if (error) {
+                    console.error("Erro Supabase:", error);
+                    msg.innerText = "Erro: " + error.message + " (Verifique o console)";
+                    msg.style.color = "#ff3b5c";
+                } else {
+                    msg.innerText = "🔥 Sucesso! Verifique seu e-mail e clique no link para acessar.";
+                    msg.style.color = "#00e87a";
+                }
+            } catch (e) {
+                console.error("Erro na requisição:", e);
+                msg.innerText = "Erro de conexão ao tentar enviar.";
+                msg.style.color = "#ff3b5c";
             }
         }
     </script>
