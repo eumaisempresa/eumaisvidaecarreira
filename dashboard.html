@@ -3,37 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validando Acesso...</title>
+    <title>Validando Acesso — EU⁺</title>
     <style>
         body { background: #080c10; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; margin: 0; }
+        .container { text-align: center; padding: 20px; max-width: 360px; }
         .loader { border: 4px solid #111d2e; border-top: 4px solid #00d4ff; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .erro-box { display: none; background: #1a1015; border: 1px solid #ff3b5c; padding: 20px; border-radius: 8px; margin-top: 15px; }
+        .btn { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #00d4ff; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div style="text-align: center;">
-        <div class="loader"></div>
-        <p style="color: #8fa3bb; font-size: 16px;">Reconhecendo assinatura do Protagonista...</p>
+    <div class="container">
+        <div id="status-loading">
+            <div class="loader"></div>
+            <p style="color: #8fa3bb; font-size: 16px;">Autenticando credenciais do Protagonista...</p>
+        </div>
+
+        <div id="status-erro" class="erro-box">
+            <h3 style="color: #ff3b5c; margin-top: 0;">Link Expirado ou Inválido</h3>
+            <p style="color: #8fa3bb; font-size: 14px; line-height: 1.4;">Este link de acesso já foi utilizado, expirou ou foi interceptado pelo seu provedor de e-mail.</p>
+            <a href="login.html" class="btn">Solicitar Novo Link</a>
+        </div>
     </div>
 
-    <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
+    <!-- CARREGAMENTO DOS SCRIPTS COM QUEBRA DE CACHE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
+    <script src="supabase.js?v=2"></script>
     <script>
         async function executarRoteamento() {
+            const loadingBox = document.getElementById('status-loading');
+            const erroBox = document.getElementById('status-erro');
+
+            // BLINDAGEM: Garante as chaves mesmo que o roteamento limpe o escopo global
+            if (typeof supabase === 'undefined' || !supabase.auth) {
+                const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
+                const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
+                window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+                    global: { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+                });
+            }
+
             try {
-                // Intervalo técnico para o Supabase processar os parâmetros da URL
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Intervalo técnico para processar a URL
+                await new Promise(resolve => setTimeout(resolve, 2000));
 
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
                 if (sessionError || !session) {
-                    console.log("Sessão não encontrada ou expirada. Redirecionando para o login.");
-                    window.location.href = 'login.html';
+                    console.error("Erro na validação do token:", sessionError);
+                    loadingBox.style.display = 'none';
+                    erroBox.style.display = 'block';
                     return;
                 }
 
-                // Busca o plano do usuário logado na tabela do banco
+                // Busca o plano do usuário
                 const { data, error } = await supabase
                     .from('usuarios')
                     .select('plano')
@@ -41,26 +66,26 @@
                     .single();
 
                 if (error || !data) {
-                    console.log("Plano não mapeado ou erro na tabela. Direcionando para o Gratuito.");
                     window.location.href = 'dashboard-gratuito.html';
                     return;
                 }
 
-                const nívelPlano = data.plano ? data.plano.toLowerCase() : 'free';
+                const nivelPlano = data.plano ? data.plano.toLowerCase() : 'free';
 
-                if (nívelPlano === 'premium') {
+                if (nivelPlano === 'premium') {
                     window.location.href = 'dashboard-premium.html';
                 } else {
                     window.location.href = 'dashboard-gratuito.html';
                 }
 
             } catch (err) {
-                console.error("Falha crítica no roteamento:", err);
-                window.location.href = 'login.html';
+                console.error("Falha geral:", err);
+                loadingBox.style.display = 'none';
+                erroBox.style.display = 'block';
             }
         }
 
-        window.addEventListener('DOMContentLoaded', executarRoteamento);
+        window.addEventListener('DOMContentLoaded', html => executarRoteamento());
     </script>
 </body>
 </html>
