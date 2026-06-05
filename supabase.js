@@ -1,30 +1,36 @@
 /**
- * Configuração Central do Supabase - Ecossistema EU+ Vida e Carreira
+ * Configuração Central e Blindada do Supabase - EU+ Vida e Carreira
  */
 
 (function () {
+    // Credenciais do projeto Supabase
     const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
 
-    if (typeof supabase === 'undefined') {
-        console.error("Erro Crítico: A biblioteca CDN do Supabase não foi carregada antes do arquivo supabase.js.");
+    // 1. Verifica se a biblioteca CDN foi carregada corretamente pelo HTML
+    if (typeof supabase === 'undefined' && typeof window.supabase === 'undefined') {
+        console.error("❌ Erro Crítico: A biblioteca CDN do Supabase não foi encontrada.");
         return;
     }
 
-    // Inicialização segura no escopo global (window.supabase)
-    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    // Guardamos uma referência segura da biblioteca carregada via CDN
+    const supabaseLib = window.supabase || supabase;
+
+    // 2. Inicialização injetando direto no escopo global do navegador (window.supabase)
+    window.supabase = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
-            persistSession: true,       // Mantém o usuário logado
-            autoRefreshToken: true,     // Renova o token automaticamente
-            detectSessionInUrl: true    // ESSENCIAL: Captura o token do e-mail link
+            persistSession: true,       // Mantém o usuário logado no navegador
+            autoRefreshToken: true,     // Atualiza os tokens automaticamente
+            detectSessionInUrl: true    // Captura o token do link vindo do e-mail
         },
         global: {
             headers: {
+                // Injeção explícita e forçada das chaves para evitar o erro "No API key found"
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             }
         }
     });
 
-    console.log("Ambiente 'eumaisvidaecarreira' inicializado e protegido.");
+    console.log("✅ Conexão com Supabase restabelecida e chaves de API blindadas globalmente.");
 })();
