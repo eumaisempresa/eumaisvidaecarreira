@@ -3,48 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carregando...</title>
+    <title>Validando Acesso...</title>
     <style>
-        body { background: #080c10; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
-        .loader { border: 4px solid #111d2e; border-top: 4px solid #00d4ff; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        body { background: #080c10; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; margin: 0; }
+        .loader { border: 4px solid #111d2e; border-top: 4px solid #00d4ff; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div style="text-align: center;">
-        <div class="loader" style="margin: 0 auto 15px;"></div>
-        <p>Validando acesso do Protagonista...</p>
+        <div class="loader"></div>
+        <p style="color: #8fa3bb; font-size: 16px;">Reconhecendo assinatura do Protagonista...</p>
     </div>
 
+    <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="Supabase.js"></script>
+    <script src="supabase.js"></script>
     <script>
-        async function iniciarRoteamento() {
-            // Aguarda o Supabase processar o token da URL
-            await new Promise(r => setTimeout(r, 1500));
+        async function executarRoteamento() {
+            try {
+                // Intervalo técnico para o Supabase processar os parâmetros da URL
+                await new Promise(resolve => setTimeout(resolve, 1500));
 
-            const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-            if (!session) {
+                if (sessionError || !session) {
+                    console.log("Sessão não encontrada ou expirada. Redirecionando para o login.");
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Busca o plano do usuário logado na tabela do banco
+                const { data, error } = await supabase
+                    .from('usuarios')
+                    .select('plano')
+                    .eq('email', session.user.email)
+                    .single();
+
+                if (error || !data) {
+                    console.log("Plano não mapeado ou erro na tabela. Direcionando para o Gratuito.");
+                    window.location.href = 'dashboard-gratuito.html';
+                    return;
+                }
+
+                const nívelPlano = data.plano ? data.plano.toLowerCase() : 'free';
+
+                if (nívelPlano === 'premium') {
+                    window.location.href = 'dashboard-premium.html';
+                } else {
+                    window.location.href = 'dashboard-gratuito.html';
+                }
+
+            } catch (err) {
+                console.error("Falha crítica no roteamento:", err);
                 window.location.href = 'login.html';
-                return;
-            }
-
-            // Busca o plano na sua tabela de 'usuarios'
-            const { data, error } = await supabase
-                .from('usuarios')
-                .select('plano')
-                .eq('email', session.user.email)
-                .single();
-
-            // Se for Premium, vai para o premium. Se der erro ou for free, vai para o gratuito.
-            if (data && data.plano.toLowerCase() === 'premium') {
-                window.location.href = 'dashboard-premium.html';
-            } else {
-                window.location.href = 'dashboard-gratuito.html';
             }
         }
-        window.addEventListener('DOMContentLoaded', iniciarRoteamento);
+
+        window.addEventListener('DOMContentLoaded', executarRoteamento);
     </script>
 </body>
 </html>
