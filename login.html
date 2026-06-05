@@ -22,9 +22,9 @@
         <div id="msg"></div>
     </div>
 
-    <!-- CARREGAMENTO DOS SCRIPTS NA ORDEM CORRETA -->
+    <!-- CARREGAMENTO DOS SCRIPTS COM QUEBRA DE CACHE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
+    <script src="supabase.js?v=2"></script>
     <script>
         async function enviarLinkMagico() {
             const emailInput = document.getElementById('email').value.trim();
@@ -39,18 +39,27 @@
             msg.innerText = "Gerando link de acesso...";
             msg.style.color = "#00d4ff";
 
+            // BLINDAGEM: Se o script externo falhar, o HTML reconecta na hora
+            if (typeof supabase === 'undefined' || !supabase.auth) {
+                const SUPABASE_URL = 'https://kofvpmeodonlveeyeqft.supabase.co';
+                const SUPABASE_ANON_KEY = 'sb_publishable_7Fo4zVSx-DZQa5dinQse8w_V4XkETiM';
+                window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+                    global: { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+                });
+            }
+
             try {
                 const { error } = await supabase.auth.signInWithOtp({
                     email: emailInput,
                     options: {
-                        // URL exata homologada para o novo repositório
                         emailRedirectTo: 'https://eumaisempresa.github.io/eumaisvidaecarreira/dashboard.html'
                     }
                 });
 
                 if (error) {
                     console.error("Erro Supabase:", error);
-                    msg.innerText = "Erro: " + error.message + " (Verifique o console)";
+                    msg.innerText = "Erro: " + error.message;
                     msg.style.color = "#ff3b5c";
                 } else {
                     msg.innerText = "🔥 Sucesso! Verifique seu e-mail e clique no link para acessar.";
